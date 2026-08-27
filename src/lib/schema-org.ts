@@ -1,4 +1,4 @@
-import type { Location, OpeningHours } from "@/types/content";
+import type { Faq, Location, OpeningHours } from "@/types/content";
 
 /**
  * `Hospital` structured data — PLAN.md §1 item 11 and §7 item 9.
@@ -109,5 +109,51 @@ export function buildHospitalSchema({
             longitude: location.geo.longitude,
           },
         }),
+  };
+}
+
+interface JsonLdQuestion {
+  readonly "@type": "Question";
+  readonly "@id": string;
+  readonly name: string;
+  readonly acceptedAnswer: {
+    readonly "@type": "Answer";
+    readonly text: string;
+  };
+}
+
+export interface FaqPageSchema {
+  readonly "@context": "https://schema.org";
+  readonly "@type": "FAQPage";
+  readonly mainEntity: readonly JsonLdQuestion[];
+}
+
+/**
+ * `FAQPage` structured data — PLAN.md §1 item 12 and §7 item 9.
+ *
+ * Each question is addressed by slug against the origin, which gives the v2
+ * chat a citation anchor it can link to and Google a stable node id.
+ */
+export function buildFaqPageSchema({
+  faqs,
+  origin,
+}: {
+  readonly faqs: readonly Faq[];
+  readonly origin: string;
+}): FaqPageSchema {
+  const base = origin.replace(/\/+$/, "");
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      "@id": `${base}/#faq-${faq.slug}`,
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
   };
 }

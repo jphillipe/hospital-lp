@@ -434,3 +434,35 @@ export interface LocationsSectionContent {
   readonly dayRangeSeparator: string;
   readonly everyDayLabel: string;
 }
+
+export type FaqCategory = "booking" | "cost" | "visiting" | "care";
+
+export interface Faq {
+  /** Stable identity: the accordion value, the deep link, the chat's citation. */
+  readonly slug: string;
+  readonly question: string;
+  /**
+   * Self-sufficient prose. This is the chat's first grounding corpus, so an
+   * answer must stand on its own without the question or the page around it.
+   */
+  readonly answer: string;
+  readonly category: FaqCategory;
+  readonly order: number;
+}
+
+export interface FaqSectionContent {
+  readonly eyebrow: string;
+  readonly heading: string;
+  readonly lead: string;
+  /** Closes the section with the number to call when the list does not answer it. */
+  readonly fallbackLabel: string;
+  readonly fallbackBody: string;
+}
+
+export interface CtaBandContent {
+  readonly heading: string;
+  readonly body: string;
+  readonly phoneLabel: string;
+  /** The last thing on the page before the footer. It says 911. */
+  readonly emergencyNote: string;
+}

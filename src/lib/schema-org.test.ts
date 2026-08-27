@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { buildHospitalSchema } from "@/lib/schema-org";
-import type { Location } from "@/types/content";
+import { buildFaqPageSchema, buildHospitalSchema } from "@/lib/schema-org";
+import type { Faq, Location } from "@/types/content";
 
 const location: Location = {
   slug: "main-campus",
@@ -141,5 +141,68 @@ describe("buildHospitalSchema", () => {
     });
 
     expect(JSON.parse(JSON.stringify(schema))).toEqual(schema);
+  });
+});
+
+const faqs: readonly Faq[] = [
+  {
+    slug: "do-you-take-my-insurance",
+    question: "Do you take my insurance?",
+    answer: "Dighton Medical Center accepts Medicare and MassHealth.",
+    category: "cost",
+    order: 1,
+  },
+  {
+    slug: "where-do-i-park",
+    question: "Where do I park?",
+    answer: "Parking is free and on site.",
+    category: "visiting",
+    order: 2,
+  },
+];
+
+describe("buildFaqPageSchema", () => {
+  it("emits one Question per FAQ, in the order given", () => {
+    const schema = buildFaqPageSchema({
+      faqs,
+      origin: "https://dighton.example",
+    });
+
+    expect(schema["@type"]).toBe("FAQPage");
+    expect(schema.mainEntity).toHaveLength(2);
+    expect(schema.mainEntity.map((q) => q.name)).toEqual([
+      "Do you take my insurance?",
+      "Where do I park?",
+    ]);
+  });
+
+  it("addresses each question by slug so the chat has a citation anchor", () => {
+    const [first] = buildFaqPageSchema({
+      faqs,
+      origin: "https://dighton.example/",
+    }).mainEntity;
+
+    expect(first?.["@id"]).toBe(
+      "https://dighton.example/#faq-do-you-take-my-insurance",
+    );
+  });
+
+  it("wraps the answer in an Answer node", () => {
+    const [first] = buildFaqPageSchema({
+      faqs,
+      origin: "https://dighton.example",
+    }).mainEntity;
+
+    expect(first?.acceptedAnswer).toEqual({
+      "@type": "Answer",
+      text: "Dighton Medical Center accepts Medicare and MassHealth.",
+    });
+  });
+
+  it("returns an empty mainEntity rather than throwing on no FAQs", () => {
+    expect(
+      buildFaqPageSchema({ faqs: [], origin: "https://dighton.example" })
+        .mainEntity,
+    ).toEqual([]);
   });
 });

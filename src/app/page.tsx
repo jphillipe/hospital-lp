@@ -1,6 +1,8 @@
 import { AssistantBand } from "@/components/sections/assistant-band";
+import { CtaBand } from "@/components/sections/cta-band";
 import { DoctorsSection } from "@/components/sections/doctors-section";
 import { EmergencyBlock } from "@/components/sections/emergency-block";
+import { FaqSection } from "@/components/sections/faq-section";
 import { Hero } from "@/components/sections/hero";
 import { HowItWorks } from "@/components/sections/how-it-works";
 import { InsuranceSection } from "@/components/sections/insurance-section";
@@ -11,15 +13,19 @@ import { StatsSection } from "@/components/sections/stats-section";
 import { TestimonialsSection } from "@/components/sections/testimonials-section";
 import { JsonLd } from "@/components/shared/json-ld";
 import { assistant } from "@/content/assistant";
+import { ctaBand } from "@/content/cta";
 import { doctorsSection } from "@/content/doctors";
 import { emergencyBlock } from "@/content/emergency";
+import { faqSection } from "@/content/faqs";
 import { hero } from "@/content/hero";
 import { howItWorks } from "@/content/how-it-works";
 import { insuranceSection } from "@/content/insurance";
 import { locationsSection } from "@/content/locations";
+import { site } from "@/content/site";
 import {
   getAdditionalDoctors,
   getAdditionalSpecialties,
+  getFaqs,
   getFeaturedDoctors,
   getFeaturedSpecialties,
   getLocations,
@@ -30,7 +36,7 @@ import { specialtiesSection } from "@/content/specialties";
 import { statsSection } from "@/content/stats";
 import { testimonialsSection } from "@/content/testimonials";
 import { env } from "@/lib/env";
-import { buildHospitalSchema } from "@/lib/schema-org";
+import { buildFaqPageSchema, buildHospitalSchema } from "@/lib/schema-org";
 
 /**
  * The single place that reads the content modules and calls `queries.ts`.
@@ -48,6 +54,7 @@ export default async function HomePage() {
     additionalDoctors,
     specialtyNames,
     allLocations,
+    allFaqs,
   ] = await Promise.all([
     getFeaturedSpecialties(),
     getAdditionalSpecialties(),
@@ -55,6 +62,7 @@ export default async function HomePage() {
     getAdditionalDoctors(),
     getSpecialtyNames(),
     getLocations(),
+    getFaqs(),
   ]);
 
   const [mainCampus] = allLocations;
@@ -70,6 +78,12 @@ export default async function HomePage() {
           })}
         />
       )}
+      <JsonLd
+        data={buildFaqPageSchema({
+          faqs: allFaqs,
+          origin: env.NEXT_PUBLIC_SITE_URL,
+        })}
+      />
       <Hero content={hero} />
       <AssistantBand content={assistant} />
       <EmergencyBlock content={emergencyBlock} />
@@ -90,6 +104,12 @@ export default async function HomePage() {
       <TestimonialsSection content={testimonialsSection} />
       <InsuranceSection content={insuranceSection} />
       <LocationsSection content={locationsSection} locations={allLocations} />
+      <FaqSection
+        content={faqSection}
+        faqs={allFaqs}
+        phone={site.phones.main}
+      />
+      <CtaBand content={ctaBand} phone={site.phones.appointments} />
     </>
   );
 }
