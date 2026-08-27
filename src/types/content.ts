@@ -123,3 +123,35 @@ export interface EmergencyBlockContent {
   readonly body: string;
   readonly actions: readonly EmergencyAction[];
 }
+
+/** Serializable: the strip names its icon, the component resolves it. */
+export type QuickAccessIcon =
+  | "emergency"
+  | "urgent-care"
+  | "find-a-doctor"
+  | "patient-portal";
+
+/**
+ * `alert` is the emergency route only. Direction G treats alert as a
+ * wash-plus-ink pair, so it stays a card like the others — never a red block.
+ */
+export type QuickAccessTone = "default" | "alert";
+
+export interface QuickAccessItem {
+  readonly id: string;
+  readonly title: string;
+  readonly description: string;
+  /** A standing fact — hours or how the door works. Never a statistic. */
+  readonly meta: string;
+  readonly actionLabel: string;
+  readonly href: string;
+  readonly external?: boolean;
+  readonly tone?: QuickAccessTone;
+  readonly icon: QuickAccessIcon;
+}
+
+export interface QuickAccessContent {
+  readonly heading: string;
+  /** Four, one per arrival state. */
+  readonly items: readonly QuickAccessItem[];
+}

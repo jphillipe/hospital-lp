@@ -15,6 +15,7 @@ export function EmergencyBlock({
 }) {
   return (
     <section
+      id="emergency"
       aria-labelledby="emergency-heading"
       className="border-y border-alert/25 bg-alert-bg"
     >
