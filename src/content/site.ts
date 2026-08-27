@@ -29,7 +29,7 @@ export const site = {
   patientPortalUrl: "https://portal.dightonmedical.example",
   booking: {
     ctaHref: telHref(phones.appointments),
-    ctaLabel: "Book an Appointment",
+    ctaLabel: "Make an Appointment",
   },
   legal: {
     disclaimer:

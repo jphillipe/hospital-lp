@@ -3,6 +3,8 @@ export interface NavItem {
   readonly href: string;
   readonly description?: string;
   readonly external?: boolean;
+  /** Renders a caret in the header nav. PLAN.md §1 gives this to Specialties only. */
+  readonly hasSubmenu?: boolean;
 }
 
 export interface NavGroup {
@@ -50,4 +52,74 @@ export interface SiteConfig {
     readonly hipaaNotice: string;
     readonly copyrightHolder: string;
   };
+}
+
+export interface HeroMediaSource {
+  /** `null` until the photograph exists — `HeroMedia` then renders a marked block. */
+  readonly src: string | null;
+  /** Doubles as the shot brief while `src` is `null`. */
+  readonly alt: string;
+  readonly credit?: string;
+}
+
+export interface HeroSlide {
+  readonly id: string;
+  readonly eyebrow: string;
+  readonly title: string;
+  readonly body: string;
+  readonly cta: NavItem;
+  readonly media: HeroMediaSource;
+}
+
+export interface HeroCarouselLabels {
+  readonly previous: string;
+  readonly next: string;
+  readonly pause: string;
+  readonly play: string;
+  /** `"Slide %n of %total"` — both placeholders are substituted. */
+  readonly slidePosition: string;
+  readonly progressLabel: string;
+}
+
+export interface HeroContent {
+  readonly carouselLabel: string;
+  readonly slides: readonly HeroSlide[];
+  readonly labels: HeroCarouselLabels;
+}
+
+/** Content stays data: a shortcut names its icon, the component resolves it. */
+export type AssistantShortcutIcon =
+  | "specialist"
+  | "visit"
+  | "billing"
+  | "hours";
+
+export interface AssistantShortcut {
+  readonly label: string;
+  readonly icon: AssistantShortcutIcon;
+}
+
+export interface AssistantContent {
+  readonly heading: string;
+  readonly intro: string;
+  /** Four one-tap starters. */
+  readonly shortcuts: readonly AssistantShortcut[];
+  readonly inputLabel: string;
+  readonly inputPlaceholder: string;
+  readonly submitLabel: string;
+  /** Required next to every chat entry point — see PLAN.md §5 item 11. */
+  readonly disclaimer: string;
+}
+
+export interface EmergencyAction {
+  /** E.164, or a short code such as `911`. */
+  readonly phone: string;
+  readonly label: string;
+  readonly detail: string;
+}
+
+export interface EmergencyBlockContent {
+  readonly heading: string;
+  readonly body: string;
+  readonly actions: readonly EmergencyAction[];
 }

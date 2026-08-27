@@ -69,6 +69,38 @@ Two rules in `CLAUDE.md` refine this plan; the resolved version below is what to
 **v1 (required):** 01–08, 10, 11, 13, 14.
 **v1.5 (if time allows):** 09, 12, chat launcher.
 
+> **Amended 2026-08-26 — direction G reshapes items 02, 03 and the chat entry point.**
+> The visual direction now lives in `docs/DESIGN.md`; these four changes are structural,
+> so they belong here.
+>
+> 1. **Item 03 Hero is a three-slide carousel**, not a static hero. Full-bleed media under
+>    `--hero-scrim`, one eyebrow / title / paragraph / CTA per slide, progress bars at the
+>    base and circular previous · pause · next controls bottom-right. It is a region with
+>    `aria-roledescription="carousel"`; off-screen slides are `aria-hidden` and `inert`;
+>    the pause control is visible and carries `aria-pressed`; and it **never autoplays under
+>    `prefers-reduced-motion: reduce`** — it renders paused and the visitor starts it.
+>    **Why the plan changes:** the client asked for the carousel directly. The trust proof
+>    the old item 03 carried (accreditation, years, ER wait) has no home yet — it moves to
+>    item 06 `StatsSection` when the figures exist.
+> 2. **New: an assistant band directly below the hero**, overlapping it by 38px inside a
+>    `--card` / `--radius-card` / `--shadow-float` card: heading, four shortcut chips, a
+>    question field, and the mandatory notice *"Virtual assistant — not medical advice. In
+>    an emergency, call 911."* UI only — no route, no model, no request. It **supersedes the
+>    floating `ChatLauncher`** as the v1 chat entry point; `MobileCtaBar` therefore no longer
+>    has anything to fight for the bottom-right corner.
+> 3. **New: a fixed emergency block below the assistant band**, on `--alert-bg` with `--alert`
+>    ink, carrying 911, the ED front desk and the nurse line. It sits **outside** the carousel
+>    on purpose: an emergency route that rotates away is not an emergency route.
+> 4. **Item 02 header, confirmed against direction G.** Two bands, and the top one stays the
+>    red-ink `EmergencyBar` of item 01 — **not** a muted utility strip. **No language selector**
+>    (§5 item 12: the site is English-only). The account entry point is **Patient Portal**, not
+>    a "Sign In" of its own. The nav is exactly the five items in `content/navigation.ts`, with
+>    a caret on Specialties alone. A circular search control is now rendered in the header but
+>    **has no target yet** — there is no search route in v1.
+>
+> **Also changed:** `site.booking.ctaLabel` is now **"Make an Appointment"** (was "Book an
+> Appointment"), which updates every call site through `BookCta` at once.
+
 ---
 
 ## 2. File tree

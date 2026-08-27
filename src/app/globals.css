@@ -2,145 +2,213 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/*
+ * Direction G. Warm paper, petrol-green brand, violet reserved for the
+ * assistant, sand for eyebrows over media. Recorded in `docs/DESIGN.md`.
+ *
+ * The type and spacing scales are CLOSED: `--text-*` is reset to `initial`
+ * below, so any size outside the approved list fails to compile instead of
+ * quietly shipping.
+ */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-geist-sans);
-  --color-emergency: var(--emergency);
-  --color-emergency-foreground: var(--emergency-foreground);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
+  --color-body-foreground: var(--body-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Project tokens — shadcn does not cover these. */
+  --color-brand-hover: var(--brand-hover);
+  --color-ai: var(--ai);
+  --color-ai-soft: var(--ai-soft);
+  --color-alert: var(--alert);
+  --color-alert-bg: var(--alert-bg);
+
+  /* Over the media — identical in both themes, they sit on the scrim. */
+  --color-on-media: var(--on-media);
+  --color-on-media-soft: var(--on-media-soft);
+  --color-on-media-eyebrow: var(--on-media-eyebrow);
+  --color-on-media-ink: var(--on-media-ink);
+
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --font-sans: var(--font-figtree);
+  --font-heading: var(--font-newsreader);
+
+  /* Closed type scale: 11 · 12 · 13.5 · 14 · 14.5 · 16 · 19 · 24 · 32 · hero */
+  --text-*: initial;
+  --text-eyebrow: 11px;
+  --text-xs: 12px;
+  --text-sm: 13.5px;
+  --text-button: 14px;
+  --text-nav: 14.5px;
+  --text-base: 16px;
+  --text-lg: 19px;
+  --text-xl: 24px;
+  --text-2xl: 32px;
+  --text-hero: clamp(1.75rem, 4.2vw, 3rem);
+
+  --leading-hero: 1.06;
+  --leading-body: 1.65;
+  --tracking-hero: -0.018em;
+  --tracking-eyebrow: 0.2em;
+
+  /*
+   * Closed space scale. 4·8·12·16·20 are Tailwind's own 1–5; the four values
+   * above that are off the default ramp, so they get explicit names.
+   */
+  --spacing-6x: 26px;
+  --spacing-7x: 34px;
+  --spacing-8x: 52px;
+  --spacing-9x: 72px;
+  /* The assistant band lifts into the hero by this much. */
+  --spacing-overlap: 38px;
+
+  /* Closed radius set: 6 (sm) · 14 (card) · pill · icon. */
+  --radius-sm: 6px;
+  --radius-md: 6px;
+  --radius-lg: 14px;
+  --radius-xl: 14px;
+  --radius-card: 14px;
+
+  --shadow-float: var(--shadow-float-value);
 }
 
-/* Clinical light: warm neutral paper, deep teal-blue accent. */
 :root {
-  --radius: 0.625rem;
+  --radius: 14px;
 
-  --background: oklch(0.994 0.003 106);
-  --foreground: oklch(0.21 0.024 245);
+  --background: #f8f7f4;
+  --foreground: #16211e;
+  --body-foreground: #3b4744;
+  --muted-foreground: #6a7673;
+  --card: #ffffff;
+  --card-foreground: #16211e;
+  --popover: #ffffff;
+  --popover-foreground: #16211e;
+  --muted: #f1efea;
+  --border: #e3e1db;
+  --input: #c8c6be;
+  --ring: #0b5a4c;
+  --primary: #0b5a4c;
+  --primary-foreground: #ffffff;
+  --secondary: #f1efea;
+  --secondary-foreground: #16211e;
 
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.21 0.024 245);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.21 0.024 245);
+  --brand-hover: #0e7362;
+  --ai: #5b5bd6;
+  --ai-soft: #efeffc;
+  --alert: #b3261e;
+  --alert-bg: #fbedeb;
+  --shadow-float-value: 0 18px 40px -28px rgb(0 0 0 / 0.55);
 
-  --primary: oklch(0.45 0.088 212);
-  --primary-foreground: oklch(0.99 0.005 210);
-  --secondary: oklch(0.962 0.01 212);
-  --secondary-foreground: oklch(0.3 0.052 218);
+  /* Derived so the shadcn primitives keep working; not part of direction G. */
+  --accent: #f1efea;
+  --accent-foreground: #16211e;
+  --destructive: #b3261e;
+  --chart-1: #0b5a4c;
+  --chart-2: #0e7362;
+  --chart-3: #5b5bd6;
+  --chart-4: #b3261e;
+  --chart-5: #6a7673;
+  --sidebar: #f1efea;
+  --sidebar-foreground: #16211e;
+  --sidebar-primary: #0b5a4c;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f1efea;
+  --sidebar-accent-foreground: #16211e;
+  --sidebar-border: #e3e1db;
+  --sidebar-ring: #0b5a4c;
 
-  --muted: oklch(0.966 0.006 106);
-  --muted-foreground: oklch(0.475 0.021 245);
-
-  --accent: oklch(0.938 0.031 197);
-  --accent-foreground: oklch(0.3 0.058 210);
-
-  --destructive: oklch(0.545 0.201 27);
-
-  --emergency: oklch(0.468 0.176 26);
-  --emergency-foreground: oklch(0.985 0.008 26);
-
-  --border: oklch(0.9 0.009 240);
-  --input: oklch(0.9 0.009 240);
-  --ring: oklch(0.55 0.098 212);
-
-  --chart-1: oklch(0.45 0.088 212);
-  --chart-2: oklch(0.58 0.09 187);
-  --chart-3: oklch(0.66 0.09 148);
-  --chart-4: oklch(0.72 0.11 82);
-  --chart-5: oklch(0.55 0.12 300);
-
-  --sidebar: oklch(0.98 0.005 106);
-  --sidebar-foreground: oklch(0.21 0.024 245);
-  --sidebar-primary: oklch(0.45 0.088 212);
-  --sidebar-primary-foreground: oklch(0.99 0.005 210);
-  --sidebar-accent: oklch(0.938 0.031 197);
-  --sidebar-accent-foreground: oklch(0.3 0.058 210);
-  --sidebar-border: oklch(0.9 0.009 240);
-  --sidebar-ring: oklch(0.55 0.098 212);
+  /* Over the media — deliberately theme-independent. */
+  --hero-scrim: linear-gradient(
+    90deg,
+    rgb(6 14 13 / 0.86) 0%,
+    rgb(6 14 13 / 0.6) 42%,
+    rgb(6 14 13 / 0.12) 78%,
+    rgb(6 14 13 / 0.28) 100%
+  );
+  --on-media: #ffffff;
+  --on-media-soft: rgb(255 255 255 / 0.86);
+  --on-media-eyebrow: #ebd9a8;
+  /* Added: the pasted block has no ink for a white button sitting on the scrim. */
+  --on-media-ink: #0b100f;
+  --hero-slide-duration: 7000ms;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: oklch(0.192 0.021 245);
-    --foreground: oklch(0.968 0.005 106);
+    --background: #0b100f;
+    --foreground: #eaf0ed;
+    --body-foreground: #c0cbc7;
+    --muted-foreground: #85918d;
+    --card: #131a18;
+    --card-foreground: #eaf0ed;
+    --popover: #131a18;
+    --popover-foreground: #eaf0ed;
+    --muted: #101614;
+    --border: #202b28;
+    --input: #2e3b37;
+    --ring: #3fb79b;
+    --primary: #3fb79b;
+    --primary-foreground: #04201a;
+    --secondary: #101614;
+    --secondary-foreground: #eaf0ed;
 
-    --card: oklch(0.232 0.022 245);
-    --card-foreground: oklch(0.968 0.005 106);
-    --popover: oklch(0.232 0.022 245);
-    --popover-foreground: oklch(0.968 0.005 106);
+    --brand-hover: #5bcfb2;
+    --ai: #a5a6f6;
+    --ai-soft: #1b1b33;
+    --alert: #ff7062;
+    --alert-bg: #26100e;
+    --shadow-float-value: 0 18px 40px -28px rgb(0 0 0 / 0.8);
 
-    --primary: oklch(0.755 0.096 200);
-    --primary-foreground: oklch(0.2 0.03 232);
-    --secondary: oklch(0.285 0.022 245);
-    --secondary-foreground: oklch(0.968 0.005 106);
-
-    --muted: oklch(0.272 0.018 245);
-    --muted-foreground: oklch(0.752 0.017 245);
-
-    --accent: oklch(0.312 0.042 205);
-    --accent-foreground: oklch(0.952 0.024 200);
-
-    --destructive: oklch(0.704 0.172 22);
-
-    --emergency: oklch(0.512 0.185 26);
-    --emergency-foreground: oklch(0.985 0.008 26);
-
-    --border: oklch(1 0 0 / 12%);
-    --input: oklch(1 0 0 / 16%);
-    --ring: oklch(0.63 0.082 205);
-
-    --chart-1: oklch(0.755 0.096 200);
-    --chart-2: oklch(0.72 0.09 187);
-    --chart-3: oklch(0.74 0.09 148);
-    --chart-4: oklch(0.79 0.11 82);
-    --chart-5: oklch(0.7 0.12 300);
-
-    --sidebar: oklch(0.232 0.022 245);
-    --sidebar-foreground: oklch(0.968 0.005 106);
-    --sidebar-primary: oklch(0.755 0.096 200);
-    --sidebar-primary-foreground: oklch(0.2 0.03 232);
-    --sidebar-accent: oklch(0.312 0.042 205);
-    --sidebar-accent-foreground: oklch(0.952 0.024 200);
-    --sidebar-border: oklch(1 0 0 / 12%);
-    --sidebar-ring: oklch(0.63 0.082 205);
+    --accent: #1b2320;
+    --accent-foreground: #eaf0ed;
+    --destructive: #ff7062;
+    --chart-1: #3fb79b;
+    --chart-2: #5bcfb2;
+    --chart-3: #a5a6f6;
+    --chart-4: #ff7062;
+    --chart-5: #85918d;
+    --sidebar: #101614;
+    --sidebar-foreground: #eaf0ed;
+    --sidebar-primary: #3fb79b;
+    --sidebar-primary-foreground: #04201a;
+    --sidebar-accent: #1b2320;
+    --sidebar-accent-foreground: #eaf0ed;
+    --sidebar-border: #202b28;
+    --sidebar-ring: #3fb79b;
   }
+}
+
+/** The hero veil. A gradient, so it cannot ride the `--color-*` namespace. */
+@utility hero-scrim {
+  background-image: var(--hero-scrim);
 }
 
 @layer base {
@@ -152,7 +220,14 @@
     scroll-padding-top: 6rem;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-body-foreground;
+    line-height: var(--leading-body);
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-heading text-foreground;
+    font-weight: 400;
   }
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-ring;
@@ -163,4 +238,48 @@
   html {
     scroll-behavior: auto;
   }
+}
+
+/* ── Hero carousel ────────────────────────────────────────────────────── */
+
+.hero-frame {
+  min-height: clamp(30rem, 62vh, 40rem);
+}
+
+@keyframes hero-progress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.hero-progress-fill {
+  transform-origin: left;
+  animation: hero-progress var(--hero-slide-duration) linear forwards;
+}
+
+/*
+ * With motion suppressed the carousel never auto-advances, so the bar must not
+ * pretend to count down — it just marks the slide you are on.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .hero-progress-fill {
+    animation: none;
+    transform: scaleX(1);
+  }
+}
+
+/*
+ * Stands in for a photograph. A flat fill would swallow `--hero-scrim` whole —
+ * the hairlines give the veil something to grade against, and read as unshot.
+ */
+.media-placeholder {
+  background-color: var(--on-media-ink);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgb(255 255 255 / 0.06) 0 1px,
+    transparent 1px 12px
+  );
 }

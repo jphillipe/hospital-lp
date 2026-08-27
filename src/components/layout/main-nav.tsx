@@ -1,5 +1,6 @@
 "use client";
 
+import { ChevronDownIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -27,15 +28,31 @@ export function MainNav({ className }: { readonly className?: string }) {
           const [path] = item.href.split("#");
           const isActive =
             path !== undefined && path !== "/" && pathname.startsWith(path);
+          // `as const satisfies` narrows each entry to its own literal shape, so
+          // the optional flag has to be probed rather than read straight off.
+          const hasSubmenu = "hasSubmenu" in item && item.hasSubmenu === true;
 
           return (
             <NavigationMenuItem key={item.href}>
               <NavigationMenuLink
                 asChild
                 active={isActive}
-                className="px-3 py-2 font-medium"
+                className="flex flex-row items-center gap-1.5 px-2.5 py-2 text-nav font-medium whitespace-nowrap"
               >
-                <Link href={item.href}>{item.label}</Link>
+                <Link href={item.href}>
+                  {item.label}
+                  {hasSubmenu ? (
+                    <>
+                      <ChevronDownIcon
+                        aria-hidden
+                        className="size-3.5 text-muted-foreground"
+                      />
+                      <span className="sr-only">
+                        {labels.header.submenuHint}
+                      </span>
+                    </>
+                  ) : null}
+                </Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
           );

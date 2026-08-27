@@ -6,6 +6,7 @@ export const primaryNav = [
     label: "Specialties",
     href: "/#specialties",
     description: "Centers of excellence and the conditions we treat.",
+    hasSubmenu: true,
   },
   {
     label: "Find a Doctor",

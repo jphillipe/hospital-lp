@@ -1,17 +1,20 @@
-import { Container } from "@/components/shared/container";
-import { site } from "@/content/site";
+import { AssistantBand } from "@/components/sections/assistant-band";
+import { EmergencyBlock } from "@/components/sections/emergency-block";
+import { Hero } from "@/components/sections/hero";
+import { assistant } from "@/content/assistant";
+import { emergencyBlock } from "@/content/emergency";
+import { hero } from "@/content/hero";
 
 /**
- * Skeleton only — no sections yet. This will be the single place that `await`s
- * the accessors in `content/queries.ts` and passes typed props to the sections.
+ * The single place that reads the content modules and passes typed props down.
+ * Sections stay presentational.
  */
 export default function HomePage() {
   return (
-    <Container className="py-24">
-      <h1 className="font-heading text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
-        {site.name}
-      </h1>
-      <p className="mt-4 max-w-prose text-muted-foreground">{site.tagline}</p>
-    </Container>
+    <>
+      <Hero content={hero} />
+      <AssistantBand content={assistant} />
+      <EmergencyBlock content={emergencyBlock} />
+    </>
   );
 }

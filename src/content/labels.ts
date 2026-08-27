@@ -18,6 +18,10 @@ export const labels = {
     primaryNavLabel: "Primary",
     mobileNavLabel: "Site navigation",
     appointmentsLabel: "Appointments",
+    locationEyebrow: "Dighton, Massachusetts",
+    patientPortal: "Patient Portal",
+    search: "Search the site",
+    submenuHint: "has a submenu",
   },
   footer: {
     navLabel: "Footer",
