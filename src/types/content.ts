@@ -466,3 +466,14 @@ export interface CtaBandContent {
   /** The last thing on the page before the footer. It says 911. */
   readonly emergencyNote: string;
 }
+
+export interface NotFoundContent {
+  readonly eyebrow: string;
+  readonly heading: string;
+  readonly lead: string;
+  readonly destinationsLabel: string;
+  /** Reuses `NavItem`, so the 404 and the header cannot drift apart. */
+  readonly destinations: readonly NavItem[];
+  /** A 404 on a hospital site must not dead-end someone who is in a hurry. */
+  readonly emergencyNote: string;
+}
