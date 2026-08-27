@@ -155,3 +155,64 @@ export interface QuickAccessContent {
   /** Four, one per arrival state. */
   readonly items: readonly QuickAccessItem[];
 }
+
+/** Resolved to a Lucide glyph by `components/shared/icon.tsx`. */
+export type IconName =
+  | "heart-pulse"
+  | "brain"
+  | "bone"
+  | "baby"
+  | "stethoscope"
+  | "activity"
+  | "eye"
+  | "scan"
+  | "syringe"
+  | "microscope";
+
+export type AppointmentTypeSlug =
+  | "new-patient"
+  | "follow-up"
+  | "telehealth"
+  | "second-opinion"
+  | "annual-physical";
+
+export interface Specialty {
+  /** Stable identity: URL, JSON-LD `@id`, booking FK, chat citation anchor. */
+  readonly slug: string;
+  readonly name: string;
+  /** One line, for the card. */
+  readonly tagline: string;
+  /** 2–3 sentences. Feeds the v2 detail page and the chat's grounding corpus. */
+  readonly description: string;
+  readonly icon: IconName;
+  /** Appears in the home page grid. */
+  readonly featured: boolean;
+  readonly order: number;
+  readonly conditions: readonly string[];
+  readonly services: readonly string[];
+  readonly locationSlug: string;
+  readonly floor: string | null;
+  /** E.164. */
+  readonly phone: string | null;
+  readonly acceptingNewPatients: boolean;
+  readonly booking: {
+    /** Gate for the v2 scheduling flow. */
+    readonly enabled: boolean;
+    readonly requiresReferral: boolean;
+    readonly appointmentTypes: readonly AppointmentTypeSlug[];
+  };
+  readonly seo: {
+    readonly title: string;
+    readonly description: string;
+  };
+}
+
+export interface SpecialtiesSectionContent {
+  readonly eyebrow: string;
+  readonly heading: string;
+  readonly lead: string;
+  /** Labels the condition list inside each card. */
+  readonly conditionsLabel: string;
+  /** Introduces the specialties that are not featured in the grid. */
+  readonly moreLabel: string;
+}
