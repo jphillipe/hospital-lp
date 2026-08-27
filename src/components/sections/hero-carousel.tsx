@@ -23,8 +23,12 @@ function fill(template: string, position: number, total: number): string {
     .replace("%total", String(total));
 }
 
+/*
+ * The scrim is thin on the right, where these sit, so they need their own
+ * ground — over a bright frame (the lab slide) a bare white outline vanishes.
+ */
 const controlClass =
-  "flex size-9 items-center justify-center rounded-full border border-on-media-soft/40 text-on-media transition-colors hover:bg-on-media/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-on-media";
+  "flex size-9 items-center justify-center rounded-full border border-on-media-soft/40 bg-on-media-ink/40 text-on-media backdrop-blur-sm transition-colors hover:bg-on-media-ink/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-on-media";
 
 const titleClass = "max-w-2xl text-hero leading-hero tracking-hero text-on-media";
 
@@ -142,7 +146,7 @@ export function HeroCarousel({ content }: { readonly content: HeroContent }) {
                   aria-current={position === index}
                   className="block w-full cursor-pointer py-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-on-media"
                 >
-                  <span className="block h-0.5 w-full overflow-hidden bg-on-media/30">
+                  <span className="block h-0.5 w-full overflow-hidden bg-on-media-ink/50">
                     <span
                       key={`${slide.id}-${String(index)}`}
                       className={cn(
