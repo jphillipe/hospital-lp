@@ -317,3 +317,69 @@ export interface DoctorsSectionContent {
   readonly moreLabel: string;
   readonly languageNames: Readonly<Record<LanguageCode, string>>;
 }
+
+export interface HowItWorksStep {
+  readonly id: string;
+  readonly title: string;
+  readonly body: string;
+}
+
+export interface HowItWorksContent {
+  readonly eyebrow: string;
+  readonly heading: string;
+  readonly lead: string;
+  /** Exactly three. The v2 swap rewrites the third and touches nothing else. */
+  readonly steps: readonly HowItWorksStep[];
+}
+
+export interface Testimonial {
+  readonly id: string;
+  readonly quote: string;
+  /** Given name plus a surname initial, as a real hospital would publish it. */
+  readonly attribution: string;
+  readonly context: string;
+}
+
+export interface TestimonialsSectionContent {
+  readonly eyebrow: string;
+  readonly heading: string;
+  readonly lead: string;
+  readonly testimonials: readonly Testimonial[];
+  /**
+   * Required by PLAN.md §1 item 09. It is a field on the type rather than a
+   * line in the JSX so the section cannot ship without it — the same reasoning
+   * §5 item 11 applies to the chat disclaimer.
+   */
+  readonly disclaimer: string;
+}
+
+export interface CoverageItem {
+  readonly id: string;
+  readonly label: string;
+  readonly detail: string;
+}
+
+export type InsuranceNoteIcon = "before-visit" | "assistance" | "billing";
+
+export interface InsuranceNote {
+  readonly id: string;
+  readonly icon: InsuranceNoteIcon;
+  readonly title: string;
+  readonly body: string;
+  /** E.164, when the note ends in a number to call. */
+  readonly phone?: string;
+}
+
+export interface InsuranceSectionContent {
+  readonly eyebrow: string;
+  readonly heading: string;
+  readonly lead: string;
+  readonly coverageLabel: string;
+  readonly coverage: readonly CoverageItem[];
+  /**
+   * Required by the type: coverage always varies by plan and by service, so a
+   * visitor must never leave this section believing a category is a promise.
+   */
+  readonly verifyNotice: string;
+  readonly notes: readonly InsuranceNote[];
+}
