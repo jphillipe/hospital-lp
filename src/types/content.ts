@@ -89,10 +89,7 @@ export interface HeroContent {
 
 /** Content stays data: a shortcut names its icon, the component resolves it. */
 export type AssistantShortcutIcon =
-  | "specialist"
-  | "visit"
-  | "billing"
-  | "hours";
+  "specialist" | "visit" | "billing" | "hours";
 
 export interface AssistantShortcut {
   readonly label: string;
@@ -126,10 +123,7 @@ export interface EmergencyBlockContent {
 
 /** Serializable: the strip names its icon, the component resolves it. */
 export type QuickAccessIcon =
-  | "emergency"
-  | "urgent-care"
-  | "find-a-doctor"
-  | "patient-portal";
+  "emergency" | "urgent-care" | "find-a-doctor" | "patient-portal";
 
 /**
  * `alert` is the emergency route only. Direction G treats alert as a
@@ -382,4 +376,61 @@ export interface InsuranceSectionContent {
    */
   readonly verifyNotice: string;
   readonly notes: readonly InsuranceNote[];
+}
+
+export type Weekday =
+  | "Monday"
+  | "Tuesday"
+  | "Wednesday"
+  | "Thursday"
+  | "Friday"
+  | "Saturday"
+  | "Sunday";
+
+export interface OpeningHours {
+  readonly id: string;
+  /** What keeps these hours: "Emergency Department", "Urgent Care". */
+  readonly label: string;
+  readonly days: readonly Weekday[];
+  /** 24-hour `HH:MM`. Both `null` means the service never closes. */
+  readonly opens: string | null;
+  readonly closes: string | null;
+}
+
+export interface GeoPoint {
+  readonly latitude: number;
+  readonly longitude: number;
+}
+
+export interface Location {
+  readonly slug: string;
+  readonly name: string;
+  readonly description: string;
+  readonly address: PostalAddress;
+  /** E.164. */
+  readonly phone: string;
+  /** `null` until real coordinates exist — see `content/locations.ts`. */
+  readonly geo: GeoPoint | null;
+  readonly hours: readonly OpeningHours[];
+  readonly parking: string;
+  readonly gettingHere: string;
+  /** `null` while the address is not a place a map can find. */
+  readonly directionsUrl: string | null;
+  readonly order: number;
+}
+
+export interface LocationsSectionContent {
+  readonly eyebrow: string;
+  readonly heading: string;
+  readonly lead: string;
+  readonly hoursLabel: string;
+  readonly parkingLabel: string;
+  readonly gettingHereLabel: string;
+  readonly addressLabel: string;
+  readonly phoneLabel: string;
+  /** Rendered for an `OpeningHours` with no `opens`/`closes`. */
+  readonly allDayLabel: string;
+  /** Joins a run of days: "Monday to Friday". */
+  readonly dayRangeSeparator: string;
+  readonly everyDayLabel: string;
 }

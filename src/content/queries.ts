@@ -1,5 +1,6 @@
-import type { Doctor, Specialty } from "@/types/content";
+import type { Doctor, Location, Specialty } from "@/types/content";
 import { doctors } from "@/content/doctors";
+import { locations } from "@/content/locations";
 import { specialties } from "@/content/specialties";
 
 /**
@@ -101,4 +102,16 @@ export async function getDoctorBySlug(
   slug: string,
 ): Promise<Doctor | undefined> {
   return doctors.find((doctor) => doctor.slug === slug);
+}
+
+const byLocationOrder = (a: Location, b: Location): number => a.order - b.order;
+
+export async function getLocations(): Promise<readonly Location[]> {
+  return [...locations].sort(byLocationOrder);
+}
+
+export async function getLocationBySlug(
+  slug: string,
+): Promise<Location | undefined> {
+  return locations.find((location) => location.slug === slug);
 }
