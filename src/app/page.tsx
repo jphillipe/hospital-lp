@@ -3,6 +3,7 @@ import { EmergencyBlock } from "@/components/sections/emergency-block";
 import { Hero } from "@/components/sections/hero";
 import { QuickAccess } from "@/components/sections/quick-access";
 import { SpecialtiesSection } from "@/components/sections/specialties-section";
+import { StatsSection } from "@/components/sections/stats-section";
 import { assistant } from "@/content/assistant";
 import { emergencyBlock } from "@/content/emergency";
 import { hero } from "@/content/hero";
@@ -12,6 +13,7 @@ import {
 } from "@/content/queries";
 import { quickAccess } from "@/content/quick-access";
 import { specialtiesSection } from "@/content/specialties";
+import { statsSection } from "@/content/stats";
 
 /**
  * The single place that reads the content modules and calls `queries.ts`.
@@ -34,6 +36,7 @@ export default async function HomePage() {
         featured={featuredSpecialties}
         additional={additionalSpecialties}
       />
+      <StatsSection content={statsSection} />
     </>
   );
 }

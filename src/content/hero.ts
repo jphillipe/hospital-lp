@@ -1,8 +1,9 @@
 import type { HeroContent } from "@/types/content";
 
 /**
- * No figure, ranking, award or wait time appears here: none of it has been
- * supplied, and none of it may be invented.
+ * No figure, ranking, award or wait time appears here. The trust proof lives
+ * in `stats.ts`, where PLAN.md's direction G amendment parks it — the hero
+ * argues, the stats band counts.
  *
  * `alt` describes what is in the photograph, not what the slide is arguing —
  * a screen reader user should learn the picture, not hear the headline twice.

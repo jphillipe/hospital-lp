@@ -216,3 +216,39 @@ export interface SpecialtiesSectionContent {
   /** Introduces the specialties that are not featured in the grid. */
   readonly moreLabel: string;
 }
+
+export type StatReasonIcon = "campus" | "record" | "hours";
+
+export interface StatReason {
+  readonly id: string;
+  readonly icon: StatReasonIcon;
+  readonly title: string;
+  readonly body: string;
+}
+
+export interface StatFigure {
+  readonly id: string;
+  /**
+   * `null` until the hospital supplies it. The card then renders a marked
+   * placeholder rather than an estimate — CLAUDE.md forbids inventing this.
+   */
+  readonly value: string | null;
+  readonly label: string;
+  readonly detail: string;
+}
+
+export interface StatsSectionContent {
+  readonly eyebrow: string;
+  readonly heading: string;
+  readonly lead: string;
+  /** Non-numeric credibility — true today, no figures required. */
+  readonly reasons: readonly StatReason[];
+  readonly figuresLabel: string;
+  readonly figures: readonly StatFigure[];
+  /** Stands in for a `null` value. */
+  readonly pendingValue: string;
+  /** Read in place of `pendingValue`, which is punctuation to a screen reader. */
+  readonly pendingSrLabel: string;
+  /** Rendered whenever any figure is still missing. */
+  readonly pendingNotice: string;
+}
