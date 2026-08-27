@@ -1,4 +1,5 @@
-import type { Specialty } from "@/types/content";
+import type { Doctor, Specialty } from "@/types/content";
+import { doctors } from "@/content/doctors";
 import { specialties } from "@/content/specialties";
 
 /**
@@ -49,4 +50,55 @@ export async function getSpecialtyBySlug(
   slug: string,
 ): Promise<Specialty | undefined> {
   return specialties.find((specialty) => specialty.slug === slug);
+}
+
+/**
+ * Slug to display name, so a card can label a doctor's specialty without any
+ * section reaching into `specialties.ts` itself.
+ */
+export async function getSpecialtyNames(): Promise<
+  Readonly<Record<string, string>>
+> {
+  return Object.fromEntries(
+    specialties.map((specialty) => [specialty.slug, specialty.name]),
+  );
+}
+
+const byDoctorOrder = (a: Doctor, b: Doctor): number => a.order - b.order;
+
+export async function getDoctors(): Promise<readonly Doctor[]> {
+  return [...doctors].sort(byDoctorOrder);
+}
+
+export async function getFeaturedDoctors(
+  limit = 4,
+): Promise<readonly Doctor[]> {
+  const all = await getDoctors();
+  return all.filter((doctor) => doctor.featured).slice(0, limit);
+}
+
+/** Everything the grid does not show, derived from what it actually showed. */
+export async function getAdditionalDoctors(
+  limit = 4,
+): Promise<readonly Doctor[]> {
+  const [all, featured] = await Promise.all([
+    getDoctors(),
+    getFeaturedDoctors(limit),
+  ]);
+  const shown = new Set(featured.map((doctor) => doctor.slug));
+
+  return all.filter((doctor) => !shown.has(doctor.slug));
+}
+
+export async function getDoctorsBySpecialty(
+  slug: string,
+): Promise<readonly Doctor[]> {
+  const all = await getDoctors();
+  return all.filter((doctor) => doctor.specialtySlugs.includes(slug));
+}
+
+export async function getDoctorBySlug(
+  slug: string,
+): Promise<Doctor | undefined> {
+  return doctors.find((doctor) => doctor.slug === slug);
 }

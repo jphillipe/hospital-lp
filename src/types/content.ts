@@ -252,3 +252,68 @@ export interface StatsSectionContent {
   /** Rendered whenever any figure is still missing. */
   readonly pendingNotice: string;
 }
+
+export type LanguageCode = "en" | "es" | "pt" | "fr" | "zh" | "ar";
+
+export interface DoctorPhoto {
+  /**
+   * `null` until the portrait exists — `DoctorCard` then renders a monogram.
+   * Same contract as `HeroMediaSource.src`; no invented face stands in for a
+   * physician who does not exist.
+   */
+  readonly src: string | null;
+  readonly alt: string;
+  /** Fixed 600x800 (3:4). Present even while `src` is null, so v2 cannot drift. */
+  readonly width: number;
+  readonly height: number;
+  readonly blurDataURL?: string;
+}
+
+export interface DoctorEducation {
+  readonly institution: string;
+  readonly degree: string;
+  readonly year: number;
+}
+
+export interface Doctor {
+  /** Stable identity: URL, JSON-LD `@id`, booking FK, chat citation anchor. */
+  readonly slug: string;
+  readonly firstName: string;
+  readonly lastName: string;
+  /** `["MD", "FACC"]` renders as "Amara Okafor, MD, FACC". */
+  readonly credentials: readonly string[];
+  readonly title: string;
+  /** FK to `Specialty.slug`. */
+  readonly primarySpecialtySlug: string;
+  readonly specialtySlugs: readonly string[];
+  readonly photo: DoctorPhoto;
+  readonly bio: string;
+  readonly education: readonly DoctorEducation[];
+  readonly boardCertifications: readonly string[];
+  readonly languages: readonly LanguageCode[];
+  readonly yearsOfExperience: number;
+  readonly locationSlugs: readonly string[];
+  readonly acceptingNewPatients: boolean;
+  readonly featured: boolean;
+  readonly order: number;
+  readonly booking: {
+    readonly enabled: boolean;
+    /** The scheduler's own id. Null today, but the field has a home. */
+    readonly providerId: string | null;
+    readonly appointmentTypes: readonly AppointmentTypeSlug[];
+  };
+}
+
+export interface DoctorsSectionContent {
+  readonly eyebrow: string;
+  readonly heading: string;
+  readonly lead: string;
+  /** Prefixes the surname on each card's CTA: "Book with Dr. Okafor". */
+  readonly bookWithLabel: string;
+  readonly languagesLabel: string;
+  readonly acceptingLabel: string;
+  readonly notAcceptingLabel: string;
+  /** Introduces the physicians who are not featured in the grid. */
+  readonly moreLabel: string;
+  readonly languageNames: Readonly<Record<LanguageCode, string>>;
+}
