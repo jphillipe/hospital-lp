@@ -203,6 +203,16 @@ export interface Specialty {
   readonly order: number;
   readonly conditions: readonly string[];
   readonly services: readonly string[];
+  /**
+   * Whether the practice has signed off on `conditions` and `services`.
+   *
+   * `false` means the two lists are a drafted starting point, not a claim the
+   * practice has made. It is not cosmetic: the detail page prints a provisional
+   * note beside the lists, and `lib/assistant/knowledge.ts` labels them as
+   * unconfirmed in the chat corpus so the assistant hedges instead of promising
+   * a service. Flip to `true` per specialty as the practice confirms each one.
+   */
+  readonly listsConfirmed: boolean;
   readonly locationSlug: string;
   readonly floor: string | null;
   /** E.164. */
@@ -249,6 +259,8 @@ export interface SpecialtyPageContent {
   readonly servicesLabel: string;
   /** Stands in for both lists while they are empty. */
   readonly listsPendingNotice: string;
+  /** Sits under the lists while `listsConfirmed` is `false`. */
+  readonly listsProvisionalNotice: string;
   readonly cliniciansLabel: string;
   /** Stands in for the roster when no clinician is assigned to this service. */
   readonly cliniciansPendingNotice: string;

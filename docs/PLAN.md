@@ -784,6 +784,37 @@ dotenv parser reads as UTF-8: the variable name comes back as `\xFF\xFEG\0O\0O\0
 never seen, and the route quietly serves the FAQ fallback forever — the exact symptom of a working
 site with a dead assistant. Write it with `Set-Content -Encoding utf8` or from a POSIX shell.
 
+## Amendment — 2026-08-28: `conditions` and `services` drafted, and gated
+
+The owner asked for the two empty lists to be filled. They are, on all four services — and the
+project's own rule against inventing medical data is why they arrive gated rather than plain.
+
+Every entry is ordinary scope of practice for the discipline. Nothing names a piece of equipment, a
+programme, a protocol, a credential or a clinician. Nothing mentions video visits, because `faqs.ts`
+says they do not exist yet and the corpus carries both files — a service line promising one would
+hand the model a contradiction about the single thing patients most want to book. There is a test
+for that.
+
+**`Specialty.listsConfirmed` is the gate, and it is `false` on all four.** It is not cosmetic:
+
+- `SpecialtyDetail` prints `listsProvisionalNotice` above the two lists. The lists render with a
+  green tick beside every line, which reads as the practice asserting each one; nobody has asserted
+  anything yet, so the note is the difference between a draft and a claim.
+- `knowledge.ts` labels both lists `NOT CONFIRMED` in the corpus, and `prompt.ts` has a section
+  saying what to do with that: never "yes, we can help you with that", never an invitation to book
+  that specific thing — say it is what the discipline usually covers, say the practice has not
+  confirmed it, and route to the appointment line.
+
+That last piece was needed. With the corpus label alone the model still answered "Do you do falls
+prevention?" with *"Yes, we can help you with balance and staying steady on your feet"* — a direct
+promise of an unconfirmed service. The corpus said the list was provisional; nothing told the model
+what a provisional list means. With the prompt rule it now hedges the list contents while still
+answering "Do you offer physical therapy?" flatly, which is the split that was wanted: the four
+service names are confirmed, their contents are not.
+
+Flip `listsConfirmed` to `true` per specialty as the practice signs each one off, and delete
+anything it does not actually do. Both the notice and the corpus label disappear on their own.
+
 ### A note on `pnpm format`
 
 `prettier --write .` rewrites this file's tables into blockquotes and reformats forty source files

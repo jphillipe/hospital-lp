@@ -47,13 +47,47 @@ describe("buildKnowledgeContext", () => {
     expect(corpus).toContain(site.legal.hipaaNotice);
   });
 
+  it("carries every drafted condition and service", () => {
+    for (const specialty of specialties) {
+      for (const entry of [...specialty.conditions, ...specialty.services]) {
+        expect(corpus).toContain(entry);
+      }
+    }
+  });
+
   /*
-   * `conditions` and `services` are empty in `specialties.ts` on purpose —
-   * CLAUDE.md forbids inventing them. This is the test that proves filling
-   * them in is a content edit and not a code change.
+   * The one that matters. `conditions` and `services` are drafted scope, not
+   * anything the practice has signed off, so the corpus has to say so — or the
+   * model reads them as PRACTICE FACTS and promises a service to a patient.
+   * When a specialty is confirmed, its qualifier disappears and this narrows
+   * to the ones still pending.
    */
-  it("omits the empty condition and service lists rather than printing blanks", () => {
-    expect(corpus).not.toContain("conditions treated: \n");
-    expect(corpus).not.toContain("services offered: \n");
+  it("labels an unconfirmed list as unconfirmed", () => {
+    const unconfirmed = specialties.filter(
+      (specialty) => !specialty.listsConfirmed,
+    );
+    expect(unconfirmed.length).toBeGreaterThan(0);
+
+    const marks = corpus.match(/NOT CONFIRMED/g) ?? [];
+    // One per list, and every unconfirmed specialty has both lists filled.
+    expect(marks).toHaveLength(unconfirmed.length * 2);
+  });
+
+  it("never states a drafted list as a plain offering", () => {
+    expect(corpus).not.toContain("services offered:");
+    expect(corpus).not.toContain("conditions treated:");
+  });
+
+  /*
+   * `faqs.ts` says video visits do not exist yet. The corpus carries both
+   * files, so a service line promising one would hand the model a
+   * contradiction about the single thing patients ask to book.
+   */
+  it("does not offer video visits anywhere in the drafted lists", () => {
+    for (const specialty of specialties) {
+      for (const entry of [...specialty.conditions, ...specialty.services]) {
+        expect(entry.toLowerCase()).not.toMatch(/video|telehealth|virtual/);
+      }
+    }
   });
 });

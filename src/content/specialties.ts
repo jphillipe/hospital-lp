@@ -17,10 +17,23 @@ export const specialtiesSection = {
  * the difference between a primary care physician, a geriatrician and a
  * psychologist, and should not have to learn it to book a visit.
  *
- * **`conditions` and `services` are empty on purpose.** They feed the v2
- * detail page and the chat's grounding corpus, and neither can be filled in
- * from here without inventing clinical claims — `CLAUDE.md` forbids that.
- * `SpecialtiesSection` renders `pendingNotice` while they are empty.
+ * ## About `conditions` and `services`
+ *
+ * These were empty until the owner asked for them to be drafted. **Every entry
+ * is ordinary scope of practice for the discipline, and none of it has been
+ * confirmed by the practice** — which is why `listsConfirmed` is `false` on all
+ * four. That flag is load-bearing: the detail page prints a provisional note
+ * beside the lists, and the chat corpus labels them unconfirmed so the
+ * assistant never offers one of them as a service the practice provides.
+ *
+ * The line held while drafting: name what the discipline ordinarily helps with,
+ * and never anything implying a piece of equipment, a named programme, a
+ * protocol, a credential or a clinician this practice has not said it has.
+ * Nothing here mentions video visits, because `faqs.ts` says they do not exist
+ * yet — the two files have to agree.
+ *
+ * Flip `listsConfirmed` to `true` per specialty as the practice signs each one
+ * off, and delete anything it does not actually do.
  *
  * `floor` is `null` throughout for the same reason it always was: there is no
  * campus map yet. `phone` reuses the numbers in `site.ts` rather than four
@@ -36,8 +49,29 @@ export const specialties = [
     icon: "stethoscope",
     featured: true,
     order: 1,
-    conditions: [],
-    services: [],
+    conditions: [
+      "High blood pressure",
+      "Type 2 diabetes",
+      "High cholesterol",
+      "Asthma and long-term breathing problems",
+      "Thyroid conditions",
+      "Coughs, colds and infections",
+      "Rashes and other skin complaints",
+      "Aches, sprains and minor injuries",
+      "Heartburn and digestive complaints",
+      "Stress, low mood and anxiety — the first conversation",
+    ],
+    services: [
+      "Annual physicals and well visits",
+      "Ongoing care for long-term conditions",
+      "Appointments for new symptoms",
+      "Blood pressure and blood sugar checks",
+      "Vaccinations",
+      "Prescription reviews and repeat prescriptions",
+      "Well-child checks and school forms",
+      "Referrals into the other three services here",
+    ],
+    listsConfirmed: false,
     locationSlug: "main-campus",
     floor: null,
     phone: site.phones.appointments,
@@ -67,8 +101,27 @@ export const specialties = [
     icon: "heart-handshake",
     featured: true,
     order: 2,
-    conditions: [],
-    services: [],
+    conditions: [
+      "Several long-term conditions at once",
+      "A long list of medicines to keep track of",
+      "Memory changes and confusion",
+      "Falls and unsteadiness",
+      "Losing strength, appetite or weight",
+      "Trouble getting around the house",
+      "Bladder and bowel problems",
+      "Sleep problems",
+      "Low mood and isolation in later life",
+    ],
+    services: [
+      "Unhurried first visits that cover the whole picture",
+      "Reviews of everything the person is taking",
+      "A first conversation about memory concerns",
+      "Falls and steadiness reviews",
+      "Appointments arranged with a family member in the room",
+      "Planning conversations with the family",
+      "Coordination with the other services here",
+    ],
+    listsConfirmed: false,
     locationSlug: "main-campus",
     floor: null,
     phone: site.phones.appointments,
@@ -93,8 +146,25 @@ export const specialties = [
     icon: "brain",
     featured: true,
     order: 3,
-    conditions: [],
-    services: [],
+    conditions: [
+      "Anxiety and constant worry",
+      "Low mood and depression",
+      "Stress and burnout",
+      "Grief and bereavement",
+      "A change you did not choose",
+      "Trouble sleeping",
+      "Strain in a relationship or a family",
+      "Adjusting to a new diagnosis",
+      "The weight of caring for someone else",
+    ],
+    services: [
+      "Talking therapy, one to one",
+      "A first appointment without a referral",
+      "Sessions planned around what you want to change",
+      "Support for family carers",
+      "Working alongside your primary care clinician",
+    ],
+    listsConfirmed: false,
     locationSlug: "main-campus",
     floor: null,
     phone: site.phones.appointments,
@@ -119,8 +189,24 @@ export const specialties = [
     icon: "person-standing",
     featured: true,
     order: 4,
-    conditions: [],
-    services: [],
+    conditions: [
+      "Back and neck pain",
+      "Knee, hip and shoulder pain",
+      "Recovering from an operation",
+      "Sports and everyday injuries",
+      "Arthritis and stiff joints",
+      "Balance problems and unsteadiness",
+      "Getting going again after an illness",
+    ],
+    services: [
+      "An assessment of how you move",
+      "Hands-on treatment sessions",
+      "Exercises written to do at home",
+      "Rehabilitation after surgery or injury",
+      "Balance work and falls prevention",
+      "Advice on getting back to work or to a sport",
+    ],
+    listsConfirmed: false,
     locationSlug: "main-campus",
     floor: null,
     phone: site.phones.appointments,

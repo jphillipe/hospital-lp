@@ -52,11 +52,26 @@ function renderSpecialty(specialty: Specialty): string {
   if (specialty.phone !== null) {
     lines.push(`- booking phone: ${formatPhone(specialty.phone)}`);
   }
+  /*
+   * An unconfirmed list is labelled as one. Without this the model reads a
+   * drafted line as a PRACTICE FACT and tells a patient the service is offered
+   * — which is the exact failure `listsConfirmed` exists to prevent.
+   */
+  const qualifier = specialty.listsConfirmed
+    ? ""
+    : " (NOT CONFIRMED — describe these as the sort of thing this service" +
+      " usually covers, never as a service this practice offers, and send the" +
+      " visitor to the appointment line to check)";
+
   if (specialty.conditions.length > 0) {
-    lines.push(`- conditions treated: ${specialty.conditions.join(", ")}`);
+    lines.push(
+      `- commonly helps with${qualifier}: ${specialty.conditions.join(", ")}`,
+    );
   }
   if (specialty.services.length > 0) {
-    lines.push(`- services offered: ${specialty.services.join(", ")}`);
+    lines.push(
+      `- typically involves${qualifier}: ${specialty.services.join(", ")}`,
+    );
   }
 
   return lines.join("\n");

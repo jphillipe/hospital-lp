@@ -40,10 +40,12 @@ interface SpecialtyDetailProps {
  * specialty-specific word off the record, so a fifth service is a
  * `specialties.ts` edit and nothing else.
  *
- * `conditions` and `services` are empty everywhere today and three of the four
- * services have no clinician. Both cases render a stated notice rather than an
- * empty list — an absent section reads as "there is nothing", which is a
- * different claim from "we have not published it yet".
+ * Three states are said out loud rather than left to be inferred: a specialty
+ * with no lists at all gets `listsPendingNotice`; one whose lists are drafted
+ * but not yet signed off by the practice gets `listsProvisionalNotice` above
+ * them; a service with no clinician gets `cliniciansPendingNotice`. An absent
+ * section reads as "there is nothing", and an unqualified ticked list reads as
+ * a promise — both are claims this practice has not made.
  */
 export function SpecialtyDetail({
   content,
@@ -70,7 +72,10 @@ export function SpecialtyDetail({
           <nav aria-label={content.breadcrumbLabel}>
             <ol className="-mx-1 flex flex-wrap items-center gap-1 text-sm text-body-foreground">
               <li>
-                <Link href="/" className="flex min-h-11 items-center rounded-sm px-1 hover:text-primary">
+                <Link
+                  href="/"
+                  className="flex min-h-11 items-center rounded-sm px-1 hover:text-primary"
+                >
                   {content.homeLabel}
                 </Link>
               </li>
@@ -150,46 +155,61 @@ export function SpecialtyDetail({
           </h2>
 
           {hasLists ? (
-            <div className="grid gap-4 lg:grid-cols-2">
-              {specialty.conditions.length === 0 ? null : (
-                <div className="flex flex-col gap-3 rounded-card border border-border bg-card p-6x">
-                  <h3 className="text-lg">{content.conditionsLabel}</h3>
-                  <ul className="flex flex-col gap-2">
-                    {specialty.conditions.map((condition) => (
-                      <li
-                        key={condition}
-                        className="flex items-start gap-3 text-base text-body-foreground"
-                      >
-                        <CheckIcon
-                          aria-hidden
-                          className="mt-1.5 size-4 shrink-0 text-primary"
-                        />
-                        {condition}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+            <div className="flex flex-col gap-4">
+              {/*
+                The lists render with a tick beside every line, which reads as
+                the practice asserting each one. Until `listsConfirmed` is true
+                nobody has asserted anything, so the note is not decoration —
+                it is the difference between a draft and a claim.
+              */}
+              {specialty.listsConfirmed ? null : (
+                <p className="flex items-start gap-3 rounded-card border border-border bg-card p-6x text-base text-body-foreground">
+                  <InfoIcon aria-hidden className="mt-1 size-5 shrink-0" />
+                  {content.listsProvisionalNotice}
+                </p>
               )}
 
-              {specialty.services.length === 0 ? null : (
-                <div className="flex flex-col gap-3 rounded-card border border-border bg-card p-6x">
-                  <h3 className="text-lg">{content.servicesLabel}</h3>
-                  <ul className="flex flex-col gap-2">
-                    {specialty.services.map((service) => (
-                      <li
-                        key={service}
-                        className="flex items-start gap-3 text-base text-body-foreground"
-                      >
-                        <CheckIcon
-                          aria-hidden
-                          className="mt-1.5 size-4 shrink-0 text-primary"
-                        />
-                        {service}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+              <div className="grid gap-4 lg:grid-cols-2">
+                {specialty.conditions.length === 0 ? null : (
+                  <div className="flex flex-col gap-3 rounded-card border border-border bg-card p-6x">
+                    <h3 className="text-lg">{content.conditionsLabel}</h3>
+                    <ul className="flex flex-col gap-2">
+                      {specialty.conditions.map((condition) => (
+                        <li
+                          key={condition}
+                          className="flex items-start gap-3 text-base text-body-foreground"
+                        >
+                          <CheckIcon
+                            aria-hidden
+                            className="mt-1.5 size-4 shrink-0 text-primary"
+                          />
+                          {condition}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {specialty.services.length === 0 ? null : (
+                  <div className="flex flex-col gap-3 rounded-card border border-border bg-card p-6x">
+                    <h3 className="text-lg">{content.servicesLabel}</h3>
+                    <ul className="flex flex-col gap-2">
+                      {specialty.services.map((service) => (
+                        <li
+                          key={service}
+                          className="flex items-start gap-3 text-base text-body-foreground"
+                        >
+                          <CheckIcon
+                            aria-hidden
+                            className="mt-1.5 size-4 shrink-0 text-primary"
+                          />
+                          {service}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
             </div>
           ) : (
             <p className="flex items-start gap-3 rounded-card border border-border bg-card p-6x text-base text-body-foreground">
