@@ -11,7 +11,7 @@ import { site } from "@/content/site";
  */
 export const ctaBand = {
   heading: "Ready when you are.",
-  body: "One number books every service on this campus. The emergency department never closes.",
+  body: "One number books every service here, and you can call on someone else's behalf.",
   phoneLabel: "Or call the appointment line",
   emergencyNote: site.emergencyNotice,
 } as const satisfies CtaBandContent;

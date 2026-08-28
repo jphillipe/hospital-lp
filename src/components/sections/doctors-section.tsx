@@ -1,3 +1,5 @@
+import { InfoIcon } from "lucide-react";
+
 import { DoctorCard } from "@/components/cards/doctor-card";
 import { Container } from "@/components/shared/container";
 import { SectionHeading } from "@/components/shared/section-heading";
@@ -60,12 +62,18 @@ export function DoctorsSection({
           ))}
         </ul>
 
-        <div className="border-t border-border pt-6x">
-          <p className="text-sm text-body-foreground">
-            <span className="font-semibold text-foreground">
-              {content.moreLabel}
-            </span>{" "}
-            {additional.map((doctor) => formatDoctorName(doctor)).join(" · ")}
+        <div className="flex flex-col gap-2 border-t border-border pt-6x">
+          {additional.length === 0 ? null : (
+            <p className="text-sm text-body-foreground">
+              <span className="font-semibold text-foreground">
+                {content.moreLabel}
+              </span>{" "}
+              {additional.map((doctor) => formatDoctorName(doctor)).join(" · ")}
+            </p>
+          )}
+          <p className="flex items-start gap-2 text-sm text-body-foreground">
+            <InfoIcon aria-hidden className="mt-1 size-4 shrink-0" />
+            {content.pendingNotice}
           </p>
         </div>
       </Container>

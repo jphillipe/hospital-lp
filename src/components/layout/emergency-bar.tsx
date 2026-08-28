@@ -14,6 +14,10 @@ import { formatPhone } from "@/lib/format";
  * Direction G has no solid-red chrome: `--alert` is the ink and `--alert-bg`
  * the ground, in both themes. The bar keeps its position at the very top of
  * the document, which is the part PLAN.md §1 item 01 actually depends on.
+ *
+ * The emergency department's own number is gone from this bar: the practice
+ * does not have one. What is left is 911 and the nurse line, which is who you
+ * actually call when you are unsure.
  */
 export function EmergencyBar() {
   return (
@@ -30,15 +34,6 @@ export function EmergencyBar() {
         </p>
         <ul className="flex flex-wrap items-center gap-x-5 gap-y-1 text-body-foreground">
           <li className="flex items-center gap-1.5">
-            <PhoneIcon aria-hidden className="size-3.5 shrink-0 text-alert" />
-            <PhoneLink
-              phone={site.phones.emergencyDepartment}
-              className="underline-offset-4"
-            >
-              {`${labels.emergencyBar.emergencyDepartment}: ${formatPhone(site.phones.emergencyDepartment)}`}
-            </PhoneLink>
-          </li>
-          <li className="hidden items-center gap-1.5 sm:flex">
             <PhoneIcon aria-hidden className="size-3.5 shrink-0 text-alert" />
             <PhoneLink
               phone={site.phones.nurseLine}

@@ -2,50 +2,53 @@ import type { QuickAccessContent } from "@/types/content";
 import { site } from "@/content/site";
 
 /**
- * Intent triage — PLAN.md §1 item 04. Four arrival states, four doors, before
- * any marketing scroll.
+ * Intent triage — PLAN.md §1 item 04, retargeted at an outpatient practice.
  *
- * Deliberately no figures here (no wait time, no physician count): PLAN.md's
- * direction G amendment parks the trust proof in item 06 `StatsSection` until
- * the numbers exist. Every line below is a standing fact, not a claim.
+ * The emergency and urgent-care doors are gone because the practice has
+ * neither; `EmergencyBlock` sits above this strip and sends people to 911
+ * instead. What replaces them are the two routes the client asked to keep
+ * permanently visible — booking and virtual care — so the on-page strip and
+ * the persistent action bar name the same things.
+ *
+ * Deliberately no figures here. Every line below is a standing fact, not a
+ * claim, and `virtual-care` is honest about not existing yet.
  */
 export const quickAccess = {
   heading: "Where would you like to start?",
   items: [
     {
-      id: "emergency",
-      title: "Emergency 24/7",
+      id: "book",
+      title: "Book an appointment",
       description:
-        "Chest pain, difficulty breathing, severe bleeding or any life-threatening symptom. Call 911 or come straight to the Emergency Department.",
-      meta: "Open 24 hours, every day",
-      actionLabel: "Emergency contacts",
-      href: "/#emergency",
-      tone: "alert",
-      icon: "emergency",
-    },
-    {
-      id: "urgent-care",
-      title: "Urgent Care",
-      description:
-        "Fevers, sprains, minor cuts and infections that cannot wait for your primary care visit.",
-      meta: "Walk in — no appointment needed",
-      actionLabel: "Hours and locations",
-      href: "/#locations",
-      icon: "urgent-care",
+        "One number books every service here. Tell us what is going on in your own words and we will find the right visit.",
+      meta: "By phone, Monday to Friday",
+      actionLabel: "Call the appointment line",
+      href: site.booking.ctaHref,
+      icon: "book",
     },
     {
       id: "find-a-doctor",
-      title: "Find a Doctor",
+      title: "Find a clinician",
       description:
-        "Browse our physicians by name or specialty and see who is accepting new patients.",
+        "See who practises here, which languages they speak, and who is taking new patients.",
       meta: "Then call to book your visit",
-      actionLabel: "Browse physicians",
-      href: "/#doctors",
+      actionLabel: "Browse clinicians",
+      href: "#doctors",
       icon: "find-a-doctor",
     },
     {
+      id: "virtual-care",
+      title: "Virtual care",
+      description:
+        "Video visits for the appointments that do not need you to travel. We are still setting this up.",
+      meta: "Coming soon",
+      actionLabel: "What is planned",
+      href: "#virtual-care",
+      icon: "virtual-care",
+    },
+    {
       id: "patient-portal",
-      title: "Patient Portal",
+      title: "Patient portal",
       description:
         "Test results, visit summaries, messages to your care team, bills and prescription refills.",
       meta: "Secure sign-in",

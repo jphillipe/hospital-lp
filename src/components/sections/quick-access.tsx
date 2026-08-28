@@ -1,21 +1,21 @@
 import { cva } from "class-variance-authority";
 import type { LucideIcon } from "lucide-react";
 import {
-  AmbulanceIcon,
   ArrowRightIcon,
-  BriefcaseMedicalIcon,
+  CalendarDaysIcon,
   LockKeyholeIcon,
   SquareArrowOutUpRightIcon,
   UserSearchIcon,
+  VideoIcon,
 } from "lucide-react";
 
 import { Container } from "@/components/shared/container";
 import type { QuickAccessContent, QuickAccessIcon } from "@/types/content";
 
 const itemIcons: Record<QuickAccessIcon, LucideIcon> = {
-  emergency: AmbulanceIcon,
-  "urgent-care": BriefcaseMedicalIcon,
+  book: CalendarDaysIcon,
   "find-a-doctor": UserSearchIcon,
+  "virtual-care": VideoIcon,
   "patient-portal": LockKeyholeIcon,
 };
 

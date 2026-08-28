@@ -25,8 +25,6 @@ export interface PhoneNumbers {
   readonly main: string;
   /** E.164 — appointment line, the v1 target of every Book CTA. */
   readonly appointments: string;
-  /** E.164 — emergency department front desk (not a substitute for 911). */
-  readonly emergencyDepartment: string;
   /** E.164 — 24/7 nurse advice line. */
   readonly nurseLine: string;
 }
@@ -62,29 +60,24 @@ export interface HeroMediaSource {
   readonly credit?: string;
 }
 
-export interface HeroSlide {
-  readonly id: string;
+/**
+ * One frame, no rotation. A carousel moves the offer away from someone who
+ * reads slowly, which is the opposite of what this audience needs, so the hero
+ * carries a single argument and hands over to the specialties below it.
+ */
+export interface HeroContent {
+  /** Sits above the display line, in sand, over the photograph. */
   readonly eyebrow: string;
   readonly title: string;
   readonly body: string;
-  readonly cta: NavItem;
+  /** The question that hands the visitor to the specialties section. */
+  readonly handoff: string;
+  /**
+   * The booking button beside it is `BookCta`, never a `NavItem` — every route
+   * to scheduling on this site goes through that one component.
+   */
+  readonly secondaryAction: NavItem;
   readonly media: HeroMediaSource;
-}
-
-export interface HeroCarouselLabels {
-  readonly previous: string;
-  readonly next: string;
-  readonly pause: string;
-  readonly play: string;
-  /** `"Slide %n of %total"` — both placeholders are substituted. */
-  readonly slidePosition: string;
-  readonly progressLabel: string;
-}
-
-export interface HeroContent {
-  readonly carouselLabel: string;
-  readonly slides: readonly HeroSlide[];
-  readonly labels: HeroCarouselLabels;
 }
 
 /** Content stays data: a shortcut names its icon, the component resolves it. */
@@ -123,7 +116,10 @@ export interface EmergencyBlockContent {
 
 /** Serializable: the strip names its icon, the component resolves it. */
 export type QuickAccessIcon =
-  "emergency" | "urgent-care" | "find-a-doctor" | "patient-portal";
+  | "book"
+  | "virtual-care"
+  | "find-a-doctor"
+  | "patient-portal";
 
 /**
  * `alert` is the emergency route only. Direction G treats alert as a
@@ -152,16 +148,10 @@ export interface QuickAccessContent {
 
 /** Resolved to a Lucide glyph by `components/shared/icon.tsx`. */
 export type IconName =
-  | "heart-pulse"
-  | "brain"
-  | "bone"
-  | "baby"
   | "stethoscope"
-  | "activity"
-  | "eye"
-  | "scan"
-  | "syringe"
-  | "microscope";
+  | "heart-handshake"
+  | "brain"
+  | "person-standing";
 
 export type AppointmentTypeSlug =
   | "new-patient"
@@ -205,10 +195,14 @@ export interface SpecialtiesSectionContent {
   readonly eyebrow: string;
   readonly heading: string;
   readonly lead: string;
-  /** Labels the condition list inside each card. */
-  readonly conditionsLabel: string;
-  /** Introduces the specialties that are not featured in the grid. */
+  /**
+   * Introduces the specialties that are not featured in the grid. Nothing is
+   * held back today, so the section drops the line rather than printing a
+   * label with nothing after it.
+   */
   readonly moreLabel: string;
+  /** Stands under the grid while the service list is still being decided. */
+  readonly pendingNotice: string;
 }
 
 export type StatReasonIcon = "campus" | "record" | "hours";
@@ -309,6 +303,11 @@ export interface DoctorsSectionContent {
   readonly notAcceptingLabel: string;
   /** Introduces the physicians who are not featured in the grid. */
   readonly moreLabel: string;
+  /**
+   * Rendered whenever a specialty has no named clinician yet. The roster is
+   * the client's to supply; inventing one is what `CLAUDE.md` forbids.
+   */
+  readonly pendingNotice: string;
   readonly languageNames: Readonly<Record<LanguageCode, string>>;
 }
 
@@ -457,6 +456,95 @@ export interface FaqSectionContent {
   /** Closes the section with the number to call when the list does not answer it. */
   readonly fallbackLabel: string;
   readonly fallbackBody: string;
+}
+
+/**
+ * The band aimed at the adult child rather than the patient. It is the one
+ * section on the page written for someone acting on another person's behalf,
+ * which is who most often arrives here on a phone.
+ */
+export interface CaregiverBandContent {
+  readonly eyebrow: string;
+  readonly heading: string;
+  readonly lead: string;
+  readonly body: string;
+  /** Short reassurances about how starting works — never a clinical claim. */
+  readonly points: readonly string[];
+  readonly action: NavItem;
+  readonly phoneLabel: string;
+}
+
+export interface VirtualCareContent {
+  readonly eyebrow: string;
+  readonly heading: string;
+  readonly lead: string;
+  /** Renders as a chip on the heading: "Coming soon". */
+  readonly statusLabel: string;
+  readonly body: string;
+  /** What to do until it exists. */
+  readonly meanwhileLabel: string;
+  readonly meanwhileBody: string;
+  readonly phoneLabel: string;
+  /**
+   * Required by the type, not by memory: this service does not exist yet and a
+   * visitor must not leave the section thinking it does.
+   */
+  readonly pendingNotice: string;
+}
+
+/**
+ * A router, not a triage tool. Every branch ends in "start here", never in a
+ * condition, and the emergency line is visible at every step.
+ */
+export type CareFinderStep =
+  | { readonly kind: "question"; readonly id: string }
+  | { readonly kind: "outcome"; readonly id: string };
+
+export interface CareFinderOption {
+  readonly id: string;
+  readonly label: string;
+  readonly next: CareFinderStep;
+}
+
+export interface CareFinderQuestion {
+  readonly id: string;
+  readonly prompt: string;
+  readonly help?: string;
+  readonly options: readonly CareFinderOption[];
+}
+
+export interface CareFinderOutcome {
+  readonly id: string;
+  readonly title: string;
+  readonly body: string;
+  /** FK to `Specialty.slug`; `null` when the answer is "call and we'll help". */
+  readonly specialtySlug: string | null;
+}
+
+export interface CareFinderLabels {
+  readonly back: string;
+  readonly restart: string;
+  /** `"Step %n of %total"` — both placeholders are substituted. */
+  readonly progress: string;
+  readonly resultEyebrow: string;
+  readonly startHereLabel: string;
+  readonly callLabel: string;
+  /** Sits under every result. Says in plain words that this is not a diagnosis. */
+  readonly disclaimer: string;
+  readonly emergencyNote: string;
+}
+
+export interface CareFinderContent {
+  readonly eyebrow: string;
+  readonly heading: string;
+  readonly lead: string;
+  readonly startLabel: string;
+  /** Every path is this long, so the progress line can name a total. */
+  readonly stepCount: number;
+  readonly firstQuestionId: string;
+  readonly questions: readonly CareFinderQuestion[];
+  readonly outcomes: readonly CareFinderOutcome[];
+  readonly labels: CareFinderLabels;
 }
 
 export interface CtaBandContent {

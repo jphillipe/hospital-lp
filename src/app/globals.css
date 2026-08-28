@@ -158,7 +158,6 @@
   --on-media-eyebrow: #ebd9a8;
   /* Added: the pasted block has no ink for a white button sitting on the scrim. */
   --on-media-ink: #0b100f;
-  --hero-slide-duration: 7000ms;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -240,35 +239,10 @@
   }
 }
 
-/* ── Hero carousel ────────────────────────────────────────────────────── */
+/* ── Hero ─────────────────────────────────────────────────────────────── */
 
 .hero-frame {
   min-height: clamp(30rem, 62vh, 40rem);
-}
-
-@keyframes hero-progress {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
-}
-
-.hero-progress-fill {
-  transform-origin: left;
-  animation: hero-progress var(--hero-slide-duration) linear forwards;
-}
-
-/*
- * With motion suppressed the carousel never auto-advances, so the bar must not
- * pretend to count down — it just marks the slide you are on.
- */
-@media (prefers-reduced-motion: reduce) {
-  .hero-progress-fill {
-    animation: none;
-    transform: scaleX(1);
-  }
 }
 
 /*

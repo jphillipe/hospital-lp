@@ -2,8 +2,13 @@ import type { EmergencyBlockContent } from "@/types/content";
 import { site } from "@/content/site";
 
 /**
- * Deliberately outside the carousel: an emergency route that rotates away is
- * not an emergency route. See PLAN.md §1 item 01.
+ * Dighton Medical Center has no emergency department. This block used to send
+ * people to one on this campus; it now sends them to 911 and to the nearest
+ * emergency department, which is the only honest route.
+ *
+ * It stays fixed high on the page and outside every interactive component for
+ * the reason it always did: a route to emergency care that has to be found is
+ * not a route to emergency care.
  */
 export const emergencyBlock = {
   heading: "Medical emergency?",
@@ -15,14 +20,9 @@ export const emergencyBlock = {
       detail: "Ambulance and emergency services",
     },
     {
-      phone: site.phones.emergencyDepartment,
-      label: "Emergency Department",
-      detail: "Front desk, open 24/7",
-    },
-    {
       phone: site.phones.nurseLine,
       label: "24/7 Nurse Line",
-      detail: "Advice when you are unsure",
+      detail: "Advice when you are unsure whether to go in",
     },
   ],
 } as const satisfies EmergencyBlockContent;

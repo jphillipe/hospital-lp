@@ -16,25 +16,25 @@ export const testimonialsSection = {
   lead: "Rarely the diagnosis. Usually whether anyone explained, and whether they had to tell the story twice.",
   testimonials: [
     {
-      id: "mary",
-      quote:
-        "I came in through the emergency department and left with a cardiology appointment already booked. Nobody asked me to repeat my history twice.",
-      attribution: "Mary R.",
-      context: "Cardiology patient",
-    },
-    {
       id: "tiago",
       quote:
-        "My mother speaks very little English. They found a physician who speaks Portuguese, and the whole thing stopped being frightening for her.",
+        "I called about my mother, not about myself, and nobody made that awkward. They told me which appointment to book before I had finished explaining.",
       attribution: "Tiago F.",
       context: "Son of a patient",
     },
     {
+      id: "mary",
+      quote:
+        "I take nine different medicines and I have never once had to list them from memory here. Somebody had already read the file.",
+      attribution: "Mary R.",
+      context: "Geriatric care patient",
+    },
+    {
       id: "alan",
       quote:
-        "The surgeon explained what would happen in plain language, and then again when I asked. That is the part I remember.",
+        "She explained what the exercises were for in plain language, and then again when I asked. That is the part I remember.",
       attribution: "Alan W.",
-      context: "Orthopedics patient",
+      context: "Physical therapy patient",
     },
   ],
   disclaimer:

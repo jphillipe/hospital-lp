@@ -1,21 +1,22 @@
-import { SearchIcon } from "lucide-react";
-
-import { BookCta } from "@/components/booking/book-cta";
 import { MainNav } from "@/components/layout/main-nav";
 import { MobileNav } from "@/components/layout/mobile-nav";
 import { SiteLogo } from "@/components/layout/site-logo";
+import { siteActions } from "@/components/layout/site-actions";
 import { StickyHeader } from "@/components/layout/sticky-header";
 import { Container } from "@/components/shared/container";
-import { labels } from "@/content/labels";
-import { site } from "@/content/site";
+import { cn } from "@/lib/utils";
 
 /**
  * Server Component. `StickyHeader` (scroll shadow), `MainNav` and `MobileNav`
  * are the three Client leaves.
  *
- * Per PLAN.md §1 the utility row above is the red `EmergencyBar`, not a muted
- * utility strip, and the site is English-only — so there is no language
- * selector here, and the account entry point is Patient Portal.
+ * The three persistent actions live here from `lg` up and in
+ * `MobileActionBar` below it, so a phone gets them fixed at the bottom of the
+ * screen instead of squeezed into a row that cannot hold them.
+ *
+ * The search button that used to sit at the end of this row is gone. It had no
+ * handler and no search to run; a control that does nothing is worse than an
+ * absent one for someone who is not sure whether they tapped it properly.
  */
 export function SiteHeader() {
   return (
@@ -25,29 +26,30 @@ export function SiteHeader() {
 
         <MainNav className="hidden lg:flex" />
 
-        <div className="flex shrink-0 items-center gap-2">
-          <a
-            href={site.patientPortalUrl}
-            className="hidden rounded-sm px-2 text-nav font-medium whitespace-nowrap text-body-foreground hover:text-primary xl:inline-flex"
-          >
-            {labels.header.patientPortal}
-          </a>
+        <div className="hidden shrink-0 items-center gap-2 lg:flex">
+          {siteActions.map((action) => {
+            const Icon = action.icon;
+            const isBook = action.id === "book";
 
-          <BookCta
-            className="hidden h-10 rounded-full px-5 text-button font-semibold sm:inline-flex"
-            size="lg"
-          />
-
-          <button
-            type="button"
-            aria-label={labels.header.search}
-            className="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full border border-border text-body-foreground transition-colors hover:border-primary hover:text-primary"
-          >
-            <SearchIcon aria-hidden className="size-4" />
-          </button>
-
-          <MobileNav className="lg:hidden" />
+            return (
+              <a
+                key={action.id}
+                href={action.href}
+                className={cn(
+                  "inline-flex h-11 items-center gap-2 rounded-full px-4 text-button font-semibold whitespace-nowrap transition-colors",
+                  isBook
+                    ? "bg-primary text-primary-foreground hover:bg-brand-hover"
+                    : "border border-border text-body-foreground hover:border-primary hover:text-primary",
+                )}
+              >
+                <Icon aria-hidden className="size-4 shrink-0" />
+                {action.label}
+              </a>
+            );
+          })}
         </div>
+
+        <MobileNav className="lg:hidden" />
       </Container>
     </StickyHeader>
   );
