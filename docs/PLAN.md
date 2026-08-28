@@ -674,3 +674,118 @@ The cost the second pass was avoiding is back with it: three bands stand between
 four services, and the assistant still posts nowhere, so the first interactive thing on the page
 does nothing when used. Recorded here, not argued again — the owner has the measurement and made
 the call. `/api/chat` is what settles it.
+
+## Amendment — 2026-08-28: the assistant answers (v2, `/api/chat`)
+
+The previous amendment ended on "`/api/chat` is what settles it". This is that. The band no longer
+posts nowhere: asking a question opens a side panel and streams an answer back.
+
+Three decisions were the owner's, taken before any code:
+
+- **Provider: Google Gemini, free tier** (`gemini-3.5-flash`, no card). Google cut free quotas
+  50–80% without notice in December 2025 and the allowance disappears the moment billing is enabled
+  on the project, so the free tier is treated as unreliable by design rather than trusted.
+- **Medical scope: explain generally, then route.** The assistant may describe a condition or a
+  service at waiting-room-leaflet level. It may not assess the person asking.
+- **Shape: a side panel**, on the `Sheet` primitive already in `ui/`.
+
+### Safety is three layers, and the first one is not a prompt
+
+1. `lib/assistant/safety.ts` — `detectEmergency()` runs on the incoming message **before** the
+   corpus is built and before any request leaves the server. On a hit the route returns
+   `assistant.panel.emergencyReply` verbatim and never calls the model. Chest pain, airway, stroke,
+   bleeding, overdose, self-harm. Bias is toward false positives; negation is not modelled, because
+   an unnecessary 911 notice costs a sentence and the inverse costs more. Bare "emergency" is not a
+   pattern — "do you have an emergency room?" is a question about the practice, from `faqs.ts`.
+2. `lib/assistant/prompt.ts` — the refusal rules: no diagnosis, no interpretation of the asker's own
+   symptoms, no medication, no severity or prognosis, no invented clinician, hour, price or service,
+   no asking for personal or health details. Where the corpus is silent, the answer is the main line.
+3. `assistant.panel` keeps the disclaimer and the HIPAA notice pinned inside the panel, not just on
+   the band — §5 item 11, by type.
+
+### Grounding: no RAG, on purpose
+
+`lib/assistant/knowledge.ts` serialises the whole content layer through `queries.ts` on each request
+— roughly twelve thousand tokens, which fits. That removes an embedding step, a vector store, a
+chunking strategy and every retrieval bug that comes with them. §5 item 6 said the content layer
+becomes the chat's index for free; it did, literally.
+
+It also means **filling in `conditions` and `services` is a content edit with no code change** —
+`knowledge.test.ts` is the test that holds that open. `queries.ts` finally gets its
+`import "server-only"` (§4.5's standing TODO), which cost `vitest.config.mts` an alias, since the
+package throws under every export condition except `react-server` and Vitest does not set it.
+
+### The route never returns an error
+
+Missing key, rejected key, exhausted quota, a timeout, a throw mid-stream — every path ends in
+`lib/assistant/fallback.ts`, which keyword-searches the published FAQ and answers from it. The
+assistant works with no Google account at all; the key only makes it better.
+
+One failure mode had to be found by testing rather than by reading: `streamText` does **not** reject
+and does **not** throw on the stream. A rejected key is reported to `onError` and the text stream
+simply ends empty, so the first version of the route answered a cheerful `200` with an empty body.
+The route now pulls the first chunk before committing to a stream, and treats an empty stream as the
+failure it is.
+
+### Files
+
+- `src/app/api/chat/route.ts` — nodejs runtime, `force-dynamic`. The home page stays static.
+- `src/lib/env.server.ts` — the key, kept out of `env.ts` because that module reaches the browser,
+  where a server variable is `undefined` and would fail the parse on every page load.
+- `src/lib/assistant/{knowledge,prompt,safety,fallback,schema,rate-limit,citations}.ts`
+- `src/components/chat/{assistant-experience,chat-panel,chat-message,use-assistant-chat}.tsx`
+
+`ChatPanel` is `next/dynamic` with `ssr: false` per §3, and is not mounted until something is asked.
+The transcript lives in `AssistantExperience` so closing the panel does not discard the conversation,
+and is held in state only — nothing is persisted anywhere (§5 item 5). Requests are always `POST`,
+so a question cannot reach a server log as a query string.
+
+Rate limiting is a fixed window per IP in module memory: 10 a minute. On serverless that is per
+instance, which is the wrong tool for billing and the right one for the job it has — stopping one
+script from burning a daily free-tier quota that everyone shares.
+
+**Citations without a markdown parser.** The prompt asks the model to mark a service as
+`[primary-care]`; `citations.ts` lifts those markers out and the panel builds the link from
+`specialtyNames`. A slug that is not ours is left as literal text and never becomes a link, so an
+invented service cannot turn into a 404. §5 item 4 said the slug would be the citation anchor.
+
+### Accessibility
+
+Radix brings the focus trap, `Esc` and the scrim. What it could not know: there is no `SheetTrigger`
+here — the panel opens because a question was asked — so `onCloseAutoFocus` had to be taken over to
+put focus back on whatever was used to ask. Without it, closing dropped focus onto `<body>` and a
+keyboard user restarted from the top of the document. `onOpenAutoFocus` is taken over for the same
+kind of reason: Radix's default lands on the close button, the one control nobody opens a chat to
+reach. The transcript is a `role="log"` with `aria-live="polite"` and `aria-busy` while streaming,
+and it follows the stream only while the reader is already at the bottom.
+
+### Verified against a live key
+
+Emergency short-circuit returns in 0.02s without touching the model. A question about hours is
+answered from both `hours` entries in `locations.ts` and routed to the appointment line. "What does
+physical therapy treat?" gets general education plus a `[physical-therapy]` marker that the panel
+renders as a chip to `/specialties/physical-therapy`, with the marker stripped from the prose.
+"Should I take ibuprofen?" is refused and routed to the nurse line. "Do you have a cardiologist?"
+says the service is not offered and gives the main line, inventing nothing. Warm latency is 5–8s a
+question; it streams, so the first words arrive well before that.
+
+Also exercised: the no-key fallback, the rejected-key fallback, the 429, the 400, and the focus cycle.
+
+### Two things the first run got wrong
+
+**Gemini 3.x counts reasoning against `maxOutputTokens`.** At 700 the thinking consumed the budget
+and answers arrived cut off mid-sentence — a complete-looking reply that simply stopped. The ceiling
+is now 2000 and `thinkingLevel: "minimal"` is set in `providerOptions.google.thinkingConfig`. Every
+fact the assistant may state is already in the prompt, so extended reasoning bought nothing and cost
+about ten seconds a question. Note `thinkingBudget` is the 2.5-series control and is rejected by 3.x.
+
+**`.env.local` must be UTF-8.** Windows PowerShell 5.1's `>` writes UTF-16 LE with a BOM, which the
+dotenv parser reads as UTF-8: the variable name comes back as `\xFF\xFEG\0O\0O\0...`, the key is
+never seen, and the route quietly serves the FAQ fallback forever — the exact symptom of a working
+site with a dead assistant. Write it with `Set-Content -Encoding utf8` or from a POSIX shell.
+
+### A note on `pnpm format`
+
+`prettier --write .` rewrites this file's tables into blockquotes and reformats forty source files
+the change never touched. It was run once here and reverted. Format the files you edited, not the
+repository.

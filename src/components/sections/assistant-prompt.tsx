@@ -23,20 +23,30 @@ const shortcutIcons: Record<AssistantShortcutIcon, LucideIcon> = {
 };
 
 /**
- * The only interactive part of the band, so the only part that ships JS.
- * There is no backend in this round: submitting does nothing on purpose.
- * TODO(v2): post to `/api/chat` (streaming, nodejs runtime) — see PLAN.md §2.
+ * The doorway into the assistant. It owns the draft question and nothing else:
+ * `AssistantExperience` above it owns the panel and the transcript, so a
+ * shortcut and a typed question take the same path out of here.
+ *
+ * A shortcut sends immediately rather than filling the field. Loading a label
+ * into an input the user then has to submit is a second step for no gain now
+ * that there is somewhere for the question to go.
  */
 export function AssistantPrompt({
   content,
+  onAsk,
 }: {
   readonly content: AssistantContent;
+  readonly onAsk: (question: string) => void;
 }) {
   const [question, setQuestion] = useState("");
 
   return (
     <form
-      onSubmit={(event) => event.preventDefault()}
+      onSubmit={(event) => {
+        event.preventDefault();
+        onAsk(question);
+        setQuestion("");
+      }}
       className="flex flex-col gap-5"
     >
       {/*
@@ -52,7 +62,7 @@ export function AssistantPrompt({
             <li key={shortcut.label}>
               <button
                 type="button"
-                onClick={() => setQuestion(shortcut.label)}
+                onClick={() => onAsk(shortcut.label)}
                 className="group flex h-11 w-full cursor-pointer items-center justify-start gap-2 rounded-full border border-input px-4 text-sm text-body-foreground transition-colors hover:border-ai hover:bg-ai-soft hover:text-ai sm:h-auto sm:w-auto sm:py-2"
               >
                 <Icon

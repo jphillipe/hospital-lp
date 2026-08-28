@@ -1,6 +1,6 @@
 import { SparklesIcon } from "lucide-react";
 
-import { AssistantPrompt } from "@/components/sections/assistant-prompt";
+import { AssistantExperience } from "@/components/chat/assistant-experience";
 import { Container } from "@/components/shared/container";
 import type { AssistantContent } from "@/types/content";
 
@@ -9,14 +9,16 @@ import type { AssistantContent } from "@/types/content";
  * and only the assistant's — the brand green never appears here, so nothing
  * the model says can be mistaken for the practice speaking.
  *
- * Note that submitting the form still does nothing (see `AssistantPrompt`),
- * so at the top of the page it is a promise the site cannot yet keep.
- * TODO(v2): wire `/api/chat` before this position earns itself.
+ * The band stays a Server Component: `AssistantExperience` is the client
+ * boundary, and `specialtyNames` is passed down rather than looked up, because
+ * a section that reads the content layer is a section fetching its own data.
  */
 export function AssistantBand({
   content,
+  specialtyNames,
 }: {
   readonly content: AssistantContent;
+  readonly specialtyNames: Readonly<Record<string, string>>;
 }) {
   return (
     /* The card floats: `shadow-float` needs room to fall before the next band. */
@@ -40,7 +42,10 @@ export function AssistantBand({
               <p className="text-sm text-muted-foreground">{content.intro}</p>
             </div>
 
-            <AssistantPrompt content={content} />
+            <AssistantExperience
+              content={content}
+              specialtyNames={specialtyNames}
+            />
 
             <p className="text-xs text-muted-foreground">
               {content.disclaimer}

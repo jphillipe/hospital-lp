@@ -89,6 +89,34 @@ export interface AssistantShortcut {
   readonly icon: AssistantShortcutIcon;
 }
 
+/**
+ * Everything the conversation panel says on its own behalf. Kept apart from
+ * the band's copy because the band is a doorway and the panel is the room.
+ */
+export interface AssistantPanelContent {
+  readonly title: string;
+  readonly description: string;
+  readonly closeLabel: string;
+  readonly inputLabel: string;
+  readonly inputPlaceholder: string;
+  readonly sendLabel: string;
+  readonly thinkingLabel: string;
+  /** Names the chip row under an answer that points at a service. */
+  readonly relatedLabel: string;
+  /** Shown when the transcript cannot be recovered at all. */
+  readonly errorMessage: string;
+  /**
+   * Returned verbatim, without calling the model, whenever `detectEmergency`
+   * fires. PLAN.md §5 item 11 — the emergency route is not the model's to
+   * phrase differently each time.
+   */
+  readonly emergencyReply: string;
+  /** Returned on HTTP 429, in place of a raw status code. */
+  readonly rateLimitReply: string;
+  /** The HIPAA line, repeated inside the panel where people type. */
+  readonly privacyNotice: string;
+}
+
 export interface AssistantContent {
   readonly heading: string;
   readonly intro: string;
@@ -99,6 +127,7 @@ export interface AssistantContent {
   readonly submitLabel: string;
   /** Required next to every chat entry point — see PLAN.md §5 item 11. */
   readonly disclaimer: string;
+  readonly panel: AssistantPanelContent;
 }
 
 export interface EmergencyAction {

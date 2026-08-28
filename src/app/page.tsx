@@ -57,8 +57,8 @@ import { buildFaqPageSchema, buildHospitalSchema } from "@/lib/schema-org";
  * catches the adult child who has just read "Geriatric Care", the second
  * catches everyone who still does not know which of the four they need.
  *
- * `AssistantBand` submits to nothing in v1 (see `AssistantPrompt`), so at this
- * height it is a promise the site cannot keep until `/api/chat` lands.
+ * `AssistantBand` posts to `/api/chat`, and takes `specialtyNames` so the
+ * panel can turn a service the model points at into a real link.
  */
 export default async function HomePage() {
   const [
@@ -100,7 +100,7 @@ export default async function HomePage() {
       />
 
       <Hero content={hero} />
-      <AssistantBand content={assistant} />
+      <AssistantBand content={assistant} specialtyNames={specialtyNames} />
       <EmergencyBlock content={emergencyBlock} />
 
       <SpecialtiesSection

@@ -1,3 +1,5 @@
+import "server-only";
+
 import type { Doctor, Faq, Location, Specialty } from "@/types/content";
 import { doctors } from "@/content/doctors";
 import { faqs } from "@/content/faqs";
@@ -8,14 +10,11 @@ import { specialties } from "@/content/specialties";
  * The access seam — PLAN.md §4.5 and §5 item 2. Every accessor reads the
  * in-memory array today; when a CMS, a database or live availability arrives,
  * this is the one file that changes. It is also the module the v2 chat's tools
- * will call.
+ * will call — `lib/assistant/knowledge.ts` is that caller.
  *
- * Only `src/app/page.tsx` calls these. Sections receive typed props.
- *
- * TODO: `import "server-only"` belongs at the top of this file so that a Client
- * Component importing it fails the build instead of quietly bundling the whole
- * content layer. The package is not installed and CLAUDE.md forbids adding a
- * dependency without asking first.
+ * Pages call these; sections receive typed props. `import "server-only"` makes
+ * a Client Component importing this file a build error rather than a silent
+ * 46 KB of content in the browser bundle.
  */
 
 const byOrder = (a: Specialty, b: Specialty): number => a.order - b.order;
