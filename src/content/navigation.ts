@@ -24,14 +24,14 @@ export const primaryNav = [
     description: "Who practises here, and which languages they speak.",
   },
   {
-    label: "Patient Info",
-    href: "/#patient-info",
-    description: "Insurance, billing and what to bring to your visit.",
-  },
-  {
     label: "Location & Hours",
     href: "/#locations",
     description: "Where we are, parking, and when you can be seen.",
+  },
+  {
+    label: "Questions",
+    href: "/#faq",
+    description: "Insurance, what to bring, and booking for a parent.",
   },
 ] as const satisfies readonly NavItem[];
 
@@ -47,27 +47,25 @@ export const footerNav = [
       { label: "Caring for an older adult", href: "/#caregivers" },
       { label: "Find a Clinician", href: "/#doctors" },
       { label: "Virtual Care", href: "/#virtual-care" },
+      { label: "In an emergency", href: "/#emergency" },
     ],
   },
   {
     title: "Patients & Visitors",
     items: [
       { label: "Patient Portal", href: site.patientPortalUrl, external: true },
-      { label: "Insurance & Billing", href: "/#insurance" },
-      { label: "Financial Assistance", href: "/#insurance" },
+      { label: "Insurance & Billing", href: "/#faq" },
+      { label: "What to bring", href: "/#faq" },
       { label: "Location & Hours", href: "/#locations" },
-      { label: "FAQ", href: "/#faq" },
+      { label: "Questions", href: "/#faq" },
     ],
   },
-  {
-    title: "About",
-    items: [
-      { label: "About Dighton Medical", href: "/#about" },
-      { label: "Quality & Safety", href: "/#about" },
-      { label: "Careers", href: "/#about" },
-      { label: "Contact Us", href: "/#locations" },
-    ],
-  },
+  /*
+   * There is no "About" group. The stats band that `/#about` pointed at was
+   * written for a 248-bed hospital and was cut; four footer links to an anchor
+   * that no longer exists is worse than three honest ones.
+   * TODO: bring it back when there is an About page to point at.
+   */
 ] as const satisfies readonly NavGroup[];
 
 export const legalNav = [

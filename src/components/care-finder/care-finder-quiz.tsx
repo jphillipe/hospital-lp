@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowLeftIcon, ArrowRightIcon, RotateCcwIcon } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 import { BookCta } from "@/components/booking/book-cta";
@@ -156,14 +157,26 @@ export function CareFinderQuiz({
           <p className="text-base text-body-foreground">{outcome.body}</p>
 
           {outcome.specialtySlug === null ? null : (
-            <p className="flex flex-col gap-1 rounded-card bg-muted px-5 py-4">
-              <span className="text-eyebrow font-semibold tracking-eyebrow text-muted-foreground uppercase">
-                {content.labels.startHereLabel}
+            /* The name is a link now that `/specialties/<slug>` exists — a
+               result that names a service and then makes you go and find it is
+               half an answer. */
+            <Link
+              href={`/specialties/${outcome.specialtySlug}`}
+              className="group flex items-center justify-between gap-4 rounded-card bg-muted px-5 py-4 transition-colors hover:bg-primary/10"
+            >
+              <span className="flex flex-col gap-1">
+                <span className="text-eyebrow font-semibold tracking-eyebrow text-muted-foreground uppercase">
+                  {content.labels.startHereLabel}
+                </span>
+                <span className="font-heading text-lg text-foreground">
+                  {specialtyNames[outcome.specialtySlug] ?? outcome.title}
+                </span>
               </span>
-              <span className="font-heading text-lg text-foreground">
-                {specialtyNames[outcome.specialtySlug] ?? outcome.title}
-              </span>
-            </p>
+              <ArrowRightIcon
+                aria-hidden
+                className="size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-primary"
+              />
+            </Link>
           )}
 
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

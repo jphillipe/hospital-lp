@@ -22,6 +22,14 @@ export const caregiverBand = {
     "One number covers every service here — there is no wrong department to start from.",
     "Bring the list of medicines they take, or read it to us over the phone.",
   ],
-  action: { label: "Learn about Geriatric Care", href: "#specialties" },
+  /*
+   * Points at the detail page, not back up at `#specialties`. The anchor sent
+   * a reader *up* the page to the one-line card they had just scrolled past,
+   * which is not what "Learn about…" promises.
+   */
+  action: {
+    label: "Learn about Geriatric Care",
+    href: "/specialties/geriatric-care",
+  },
   phoneLabel: "Or call and ask for geriatric care",
 } as const satisfies CaregiverBandContent;
