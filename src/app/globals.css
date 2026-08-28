@@ -88,6 +88,12 @@
   --spacing-8x: 52px;
   --spacing-9x: 72px;
 
+  /*
+   * Not a scale step: the single measured offset by which the assistant band
+   * lifts into the hero.
+   */
+  --spacing-overlap: 38px;
+
   /* Closed radius set: 6 (sm) · 14 (card) · pill · icon. */
   --radius-sm: 6px;
   --radius-md: 6px;

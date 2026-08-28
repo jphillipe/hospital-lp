@@ -658,3 +658,19 @@ Checked in the browser, both themes: one `h1` per page, breadcrumb order, AA con
 (worst case 5.66:1), no horizontal overflow at 375px, and every tap target on the page at or above
 44px — the breadcrumb links needed `min-h-11` to get there, since a breadcrumb is standalone
 navigation and WCAG's inline-link exception does not cover it.
+
+### Fourth pass — assistant back in the hero (owner's request)
+
+The second pass moved `AssistantBand` down beside the FAQ. The owner asked for it back where it
+started: lifted into the hero by `--spacing-overlap`, with the emergency block directly under it.
+That is the top of the page now — Hero → Assistant → Emergency → Specialties → Caregiver band →
+Care finder → Quick access → Virtual care → Doctors → Locations → FAQ → CTA.
+
+- `--spacing-overlap: 38px` is restored to `globals.css` (DESIGN.md documented it throughout).
+- `AssistantBand` gets its `relative z-10 -mt-overlap mb-8x` wrapper back.
+- `EmergencyBlock` returns to third, ahead of the specialties.
+
+The cost the second pass was avoiding is back with it: three bands stand between the hero and the
+four services, and the assistant still posts nowhere, so the first interactive thing on the page
+does nothing when used. Recorded here, not argued again — the owner has the measurement and made
+the call. `/api/chat` is what settles it.

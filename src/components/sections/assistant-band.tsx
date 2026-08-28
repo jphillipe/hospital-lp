@@ -5,16 +5,13 @@ import { Container } from "@/components/shared/container";
 import type { AssistantContent } from "@/types/content";
 
 /**
- * Violet is the assistant's colour and only the assistant's — the brand green
- * never appears here, so nothing the model says can be mistaken for the
- * practice speaking.
+ * Lifts into the hero by `--spacing-overlap`. Violet is the assistant's colour
+ * and only the assistant's — the brand green never appears here, so nothing
+ * the model says can be mistaken for the practice speaking.
  *
- * It used to lift into the hero by `--spacing-overlap` and was the second
- * thing on the page. It now sits above the FAQ, which is the other place a
- * visitor goes with a question. The move is not cosmetic: submitting this form
- * still does nothing (see `AssistantPrompt`), and a text field that swallows a
- * question is the wrong thing to put between someone and the four services.
- * TODO(v2): when `/api/chat` lands, reconsider bringing it back up the page.
+ * Note that submitting the form still does nothing (see `AssistantPrompt`),
+ * so at the top of the page it is a promise the site cannot yet keep.
+ * TODO(v2): wire `/api/chat` before this position earns itself.
  */
 export function AssistantBand({
   content,
@@ -23,7 +20,7 @@ export function AssistantBand({
 }) {
   return (
     /* The card floats: `shadow-float` needs room to fall before the next band. */
-    <div className="py-8x lg:py-9x">
+    <div className="relative z-10 -mt-overlap mb-8x">
       <Container>
         <section
           aria-labelledby="assistant-heading"
