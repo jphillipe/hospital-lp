@@ -17,8 +17,8 @@ export const howItWorks = {
   steps: [
     {
       id: "find",
-      title: "Find your doctor or service",
-      body: "Browse the specialties or the physicians above, or ask the assistant which department fits what you need. If you are not sure, the appointment line will work it out with you.",
+      title: "Find your service, or let us find it",
+      body: "Pick whichever of the four services sounds closest, or answer two questions in “Help me find care” above. If you are still not sure, that is fine — the appointment line will work it out with you.",
     },
     {
       id: "gather",
@@ -28,7 +28,7 @@ export const howItWorks = {
     {
       id: "confirm",
       title: "Call us and we will confirm your time",
-      body: "One number covers every service. We will find a slot with the right physician and tell you where to go and what to expect on the day.",
+      body: "One number covers every service, and you can call on someone else's behalf. We will find a slot with the right clinician and tell you where to go and what to expect on the day.",
     },
   ],
 } as const satisfies HowItWorksContent;

@@ -73,8 +73,9 @@ export default function NotFound() {
             <ShieldAlertIcon aria-hidden className="size-4 shrink-0" />
             {notFoundPage.emergencyNote}
           </span>
+          {/* The nurse line, not an emergency department: there isn't one. */}
           <PhoneLink
-            phone={site.phones.emergencyDepartment}
+            phone={site.phones.nurseLine}
             className="font-semibold text-alert underline underline-offset-4"
           />
         </p>

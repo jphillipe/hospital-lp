@@ -68,7 +68,7 @@ export const insuranceSection = {
       id: "assistance",
       icon: "assistance",
       title: "If you cannot pay",
-      body: "Federal law requires emergency care regardless of ability to pay, and our financial assistance programme goes further than that. Ask at any desk, or when you call to book — there is no penalty for asking.",
+      body: "We run a financial assistance programme, and instalment plans and prompt-payment discounts are available for self-pay patients. Ask at the desk, or when you call to book — there is no penalty for asking, and it is better asked before the visit than after the bill.",
     },
     {
       id: "billing",

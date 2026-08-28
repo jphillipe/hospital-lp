@@ -1,4 +1,6 @@
 import { AssistantBand } from "@/components/sections/assistant-band";
+import { CaregiverBand } from "@/components/sections/caregiver-band";
+import { CareFinderSection } from "@/components/sections/care-finder-section";
 import { CtaBand } from "@/components/sections/cta-band";
 import { DoctorsSection } from "@/components/sections/doctors-section";
 import { EmergencyBlock } from "@/components/sections/emergency-block";
@@ -11,8 +13,11 @@ import { QuickAccess } from "@/components/sections/quick-access";
 import { SpecialtiesSection } from "@/components/sections/specialties-section";
 import { StatsSection } from "@/components/sections/stats-section";
 import { TestimonialsSection } from "@/components/sections/testimonials-section";
+import { VirtualCare } from "@/components/sections/virtual-care";
 import { JsonLd } from "@/components/shared/json-ld";
 import { assistant } from "@/content/assistant";
+import { careFinder } from "@/content/care-finder";
+import { caregiverBand } from "@/content/caregiver";
 import { ctaBand } from "@/content/cta";
 import { doctorsSection } from "@/content/doctors";
 import { emergencyBlock } from "@/content/emergency";
@@ -35,6 +40,7 @@ import { quickAccess } from "@/content/quick-access";
 import { specialtiesSection } from "@/content/specialties";
 import { statsSection } from "@/content/stats";
 import { testimonialsSection } from "@/content/testimonials";
+import { virtualCare } from "@/content/virtual-care";
 import { env } from "@/lib/env";
 import { buildFaqPageSchema, buildHospitalSchema } from "@/lib/schema-org";
 
@@ -45,6 +51,11 @@ import { buildFaqPageSchema, buildHospitalSchema } from "@/lib/schema-org";
  * The `Hospital` node is built here rather than inside `LocationsSection`
  * because it needs the canonical origin, and a section that reads `env` is a
  * section fetching its own data.
+ *
+ * Section order follows the client's brief: the hero asks "how can we help
+ * you?", the specialties grid answers it, the caregiver band catches the adult
+ * child who has just read "Geriatric Care", and the finder catches everyone
+ * who still does not know which of the four they need.
  */
 export default async function HomePage() {
   const [
@@ -93,6 +104,16 @@ export default async function HomePage() {
         featured={featuredSpecialties}
         additional={additionalSpecialties}
       />
+      <CaregiverBand
+        content={caregiverBand}
+        phone={site.phones.appointments}
+      />
+      <CareFinderSection
+        content={careFinder}
+        specialtyNames={specialtyNames}
+        phone={site.phones.appointments}
+      />
+      <VirtualCare content={virtualCare} phone={site.phones.appointments} />
       <StatsSection content={statsSection} />
       <DoctorsSection
         content={doctorsSection}

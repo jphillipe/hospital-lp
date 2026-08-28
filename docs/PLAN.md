@@ -537,3 +537,56 @@ Ordered by cost of correction.
 
 Already implied by shadcn/ui and therefore not new decisions: `class-variance-authority`, `clsx`,
 `tailwind-merge`, `lucide-react`, `@radix-ui/*`.
+
+---
+
+## Amendment — 2026-08-28: repositioning to an outpatient practice
+
+This plan was written for a full hospital: an emergency department, ten specialties, a 248-bed
+campus. The client's brief replaced that with an **outpatient practice for older adults and their
+families**. Everything above still describes the architecture correctly; what follows records where
+the *content* and *page structure* now differ, and why. Where the two disagree, this amendment wins.
+
+### Decisions taken with the client
+
+| # | Question | Decision |
+|---|---|---|
+| 1 | Does the practice have its own emergency department? | **No.** Every emergency route now says "call 911 or go to the nearest emergency department". |
+| 2 | Do the four new specialties replace the ten? | **Replace.** Primary Care, Geriatric Care, Psychology, Physical Therapy. |
+| 3 | What is Virtual Care in v1? | **A marked placeholder.** No platform chosen, no date, nothing to sign up for. |
+| 4 | Where does the care finder live? | **Inline on the home page** (`#care-finder`), not a route. |
+| 5 | Does the AI assistant band stay? | **Yes**, alongside the finder. They are separated by the emergency block and the quick-access strip. |
+| 6 | Rewrite the rest of the hospital-era content? | **No** — out of scope for this round. Only what decision 1 made *false* was corrected; the rest is flagged in the "Known inconsistencies" list below. |
+
+### What changed against §1
+
+- **Item 01 hero** — the three-slide carousel is gone (`hero-carousel.tsx` deleted, along with its
+  keyframes and `--hero-slide-duration`). One static frame, zero client JS. A carousel moves the
+  offer away from a slow reader, which is the opposite of what this audience needs.
+- **Item 04 quick access** — the emergency and urgent-care doors are replaced by Book and Virtual
+  Care, so the on-page strip names the same things as the persistent action bar.
+- **New: caregiver band** (`#caregivers`) — addressed to the adult child, placed straight after the
+  specialties grid.
+- **New: care finder** (`#care-finder`) — a two-question router, `content/care-finder.ts` plus one
+  client leaf. It routes; it does not triage and it does not diagnose. The three rules that keep it
+  honest are written at the top of that file and apply to any new branch.
+- **New: virtual care** (`#virtual-care`) — exists so the third persistent action has a destination.
+- **Persistent actions** — Call / Book / Virtual Care, declared once in `layout/site-actions.ts` and
+  rendered twice: in the header from `lg` up, and in `MobileActionBar` fixed to the bottom of every
+  smaller screen. Before this, Book was `hidden sm:inline-flex` and a 390px phone had **no** way to
+  book without opening the hamburger first.
+- **Header search button removed** — it had no handler and no search to run.
+
+### Known inconsistencies, deliberately left (decision 6)
+
+These still argue the hospital-era positioning. They are recorded rather than guessed at:
+
+1. `stats.ts` — heading and lead still lean on "one practice, not a chain of handoffs"; four figures
+   are back to `null` because they counted beds, inpatients, emergency waits and accreditations.
+2. `doctors.ts` — ten of twelve physicians were removed with the services they led. Geriatrics,
+   psychology and physical therapy have **no named clinician**; `doctorsSection.pendingNotice` says
+   so. Do not fill the gap by inventing three.
+3. `specialties.ts` — `conditions` and `services` are `[]` on all four. They feed the v2 detail page
+   and the chat corpus and cannot be filled without inventing clinical claims.
+4. `insurance.ts` — coverage categories are unchanged and were never verified against this practice.
+5. `testimonials.ts` — rewritten to match the new services, still invented, still disclaimed.

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Figtree, Newsreader } from "next/font/google";
 
 import { EmergencyBar } from "@/components/layout/emergency-bar";
+import { MobileActionBar } from "@/components/layout/mobile-action-bar";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { labels } from "@/content/labels";
@@ -75,6 +76,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           {children}
         </main>
         <SiteFooter />
+        {/*
+          `MobileActionBar` is `position: fixed`, so it takes no space in the
+          flow. This reserves the height it covers — otherwise the last row of
+          the footer sits underneath it on every phone.
+        */}
+        <div aria-hidden className="h-17 shrink-0 lg:hidden" />
+        <MobileActionBar />
       </body>
     </html>
   );

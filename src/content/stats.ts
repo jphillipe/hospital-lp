@@ -1,32 +1,35 @@
 import type { StatsSectionContent } from "@/types/content";
 
 /**
- * PLAN.md §1 item 06, plus the trust proof its direction G amendment parks
- * here once figures exist — years and the average ER wait, which the hero no
- * longer carries.
+ * PLAN.md §1 item 06.
  *
- * **Every figure below is invented**, on the owner's instruction, for a
- * hospital that is itself invented. `site.legal.disclaimer` already says so in
- * the footer, which is the notice this depends on: do not remove it.
+ * **This section still argues the old positioning and is flagged, not
+ * rewritten.** It was written for a 248-bed hospital with an emergency
+ * department; the practice it now describes has neither. What has been
+ * corrected here is only what became *false* when the emergency department
+ * went away — the round-the-clock reason, and the four figures that counted
+ * beds, inpatients, emergency waits and accreditations. Those four are back to
+ * `null`, which is this file's own idiom for "not supplied": the card renders
+ * a marked placeholder and `pendingNotice` returns with it.
  *
- * `accreditations` is deliberately a count and not a list. Naming a real
- * accrediting body would attach a real organisation's imprimatur to a
- * hospital that does not exist, which is a different thing from inventing a
- * bed count.
+ * The remaining figures are invented, on the owner's instruction, for a
+ * practice that is itself invented. `site.legal.disclaimer` says so in the
+ * footer, which is the notice this depends on: do not remove it.
  *
- * A `value` set back to `null` renders a marked placeholder instead of an
- * estimate, and brings `pendingNotice` back with it.
+ * TODO: the heading and lead still say "one hospital" and "one campus". They
+ * need rewriting for an outpatient practice, and the client has not been asked
+ * yet — raised, not guessed at.
  */
 export const statsSection = {
   eyebrow: "Why Dighton",
-  heading: "One hospital, not a chain of handoffs.",
-  lead: "Care here is organised around one campus and one record, so the work of coordinating it does not land on you.",
+  heading: "One practice, not a chain of handoffs.",
+  lead: "Care here is organised around one team and one record, so the work of coordinating it does not land on you.",
   reasons: [
     {
       id: "campus",
       icon: "campus",
-      title: "Every service on one campus",
-      body: "Your specialist, your imaging and your lab sit in the same building as the clinic that sent you. A referral is a walk down a corridor rather than a new appointment across town.",
+      title: "Every service under one roof",
+      body: "Your primary care clinician, the geriatric team, psychology and physical therapy are in the same building. A referral is a walk down a corridor rather than a new appointment across town.",
     },
     {
       id: "record",
@@ -37,29 +40,23 @@ export const statsSection = {
     {
       id: "hours",
       icon: "hours",
-      title: "Open every hour of every day",
-      body: "The emergency department is staffed around the clock, every day of the year, and the nurse line answers when you are unsure whether to come in.",
+      title: "Someone to call when you are unsure",
+      body: "The nurse line answers around the clock, including when the practice is closed, and will tell you plainly whether something can wait for an appointment or needs an emergency department tonight.",
     },
   ],
   figuresLabel: "Dighton in numbers",
   figures: [
     {
-      id: "beds",
-      value: "248",
-      label: "Licensed beds",
-      detail: "Inpatient capacity on the main campus.",
-    },
-    {
-      id: "physicians",
-      value: "310",
-      label: "Physicians on staff",
-      detail: "Attending physicians across every service.",
-    },
-    {
       id: "patients",
-      value: "186,000",
+      value: null,
       label: "Patients cared for each year",
-      detail: "Inpatient, outpatient and emergency visits combined.",
+      detail: "Across primary care, geriatrics, psychology and physical therapy.",
+    },
+    {
+      id: "clinicians",
+      value: null,
+      label: "Clinicians on staff",
+      detail: "Across all four services.",
     },
     {
       id: "years",
@@ -68,16 +65,10 @@ export const statsSection = {
       detail: "Caring for Dighton and southeastern Massachusetts since 1952.",
     },
     {
-      id: "emergency-wait",
-      value: "12 min",
-      label: "Average emergency wait",
-      detail: "Median time from arrival to being seen by a clinician.",
-    },
-    {
-      id: "accreditations",
-      value: "6",
-      label: "Accreditations held",
-      detail: "Independent quality and safety reviews currently in force.",
+      id: "languages",
+      value: "3",
+      label: "Languages spoken",
+      detail: "Between the clinicians currently listed on this site.",
     },
   ],
   pendingValue: "—",

@@ -1,15 +1,9 @@
 import type { LucideIcon, LucideProps } from "lucide-react";
 import {
-  ActivityIcon,
-  BabyIcon,
-  BoneIcon,
   BrainIcon,
-  EyeIcon,
-  HeartPulseIcon,
-  MicroscopeIcon,
-  ScanIcon,
+  HeartHandshakeIcon,
+  PersonStandingIcon,
   StethoscopeIcon,
-  SyringeIcon,
 } from "lucide-react";
 
 import type { IconName } from "@/types/content";
@@ -17,18 +11,18 @@ import type { IconName } from "@/types/content";
 /**
  * Content names its glyph as a string and this resolves it, so a record stays
  * serializable and JSON-able for the day it comes from a CMS — PLAN.md §3.
+ *
+ * The client's brief pictured these four as emoji (🩺 👵 🧠 🦵). They are
+ * Lucide glyphs instead for two reasons: a screen reader announces an emoji by
+ * its Unicode name — "older person" read aloud beside "Geriatric Care" is
+ * noise — and emoji render in whatever the device happens to ship, which on an
+ * older phone is a different picture from the one anyone approved.
  */
 const registry: Record<IconName, LucideIcon> = {
-  activity: ActivityIcon,
-  baby: BabyIcon,
-  bone: BoneIcon,
-  brain: BrainIcon,
-  eye: EyeIcon,
-  "heart-pulse": HeartPulseIcon,
-  microscope: MicroscopeIcon,
-  scan: ScanIcon,
   stethoscope: StethoscopeIcon,
-  syringe: SyringeIcon,
+  "heart-handshake": HeartHandshakeIcon,
+  brain: BrainIcon,
+  "person-standing": PersonStandingIcon,
 };
 
 export function Icon({
