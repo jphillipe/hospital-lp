@@ -590,3 +590,41 @@ These still argue the hospital-era positioning. They are recorded rather than gu
    and the chat corpus and cannot be filled without inventing clinical claims.
 4. `insurance.ts` — coverage categories are unchanged and were never verified against this practice.
 5. `testimonials.ts` — rewritten to match the new services, still invented, still disclaimed.
+
+### Second pass — page order and length
+
+The first pass added the client's sections to a page that still had the hospital's running order.
+Measured on a 375x812 phone, the specialties were 3.6 screens down and the whole page was 22.2
+screens. The brief says "and here the specialties would come" directly after "How can we help you?",
+so the first pass met the letter and missed the point.
+
+**New order.** Hero → Specialties → Caregiver band → Care finder → Emergency → Quick access →
+Virtual care → Doctors → Locations → Assistant → FAQ → CTA.
+
+- The first four sections are the brief, in the brief's order.
+- **`EmergencyBlock` moved to fifth.** It was second, which is what pushed the services down. It is
+  not hard to find where it is now: `EmergencyBar` carries 911 above the header on every page, and
+  `#emergency` is in the footer nav.
+- **`AssistantBand` moved down beside the FAQ** and lost its `-mt-overlap` lift into the hero
+  (`--spacing-overlap` is deleted; DESIGN.md still documents it). It stays in v1 at the owner's
+  request — the backend is coming — but until `/api/chat` exists it is a text field that swallows a
+  question, and that does not belong between a visitor and the four services.
+
+**Cut, on the owner's instruction:** `StatsSection`, `TestimonialsSection`, `InsuranceSection` and
+`HowItWorks`, with their content modules and their types. All four were written for the 248-bed
+hospital. Insurance is not lost — `faqs.ts` carries coverage, financial assistance and what to bring,
+and the footer's billing links now point there.
+
+Dead anchors that went with them (`#about`, `#patient-info`, `#insurance`, `#patient-stories`) are
+repointed in `navigation.ts`, and the footer's "About" group is gone rather than pointing four links
+at an anchor that no longer exists.
+
+| Measure (375x812) | Before | After |
+|---|---|---|
+| Screens to Specialties | 3.6 | **0.8** |
+| Screens to "Caring for an older adult?" | 5.2 | **2.4** |
+| Screens to "Help me find care" | 6.3 | **3.5** |
+| Whole page | 22.2 | **14.8** |
+
+Next candidate if it needs to be shorter still: `QuickAccess` (1.5 screens) largely repeats the
+persistent action bar now that Call / Book / Virtual Care are fixed to every screen.

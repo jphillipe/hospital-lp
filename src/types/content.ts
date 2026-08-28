@@ -205,42 +205,6 @@ export interface SpecialtiesSectionContent {
   readonly pendingNotice: string;
 }
 
-export type StatReasonIcon = "campus" | "record" | "hours";
-
-export interface StatReason {
-  readonly id: string;
-  readonly icon: StatReasonIcon;
-  readonly title: string;
-  readonly body: string;
-}
-
-export interface StatFigure {
-  readonly id: string;
-  /**
-   * `null` until the hospital supplies it. The card then renders a marked
-   * placeholder rather than an estimate — CLAUDE.md forbids inventing this.
-   */
-  readonly value: string | null;
-  readonly label: string;
-  readonly detail: string;
-}
-
-export interface StatsSectionContent {
-  readonly eyebrow: string;
-  readonly heading: string;
-  readonly lead: string;
-  /** Non-numeric credibility — true today, no figures required. */
-  readonly reasons: readonly StatReason[];
-  readonly figuresLabel: string;
-  readonly figures: readonly StatFigure[];
-  /** Stands in for a `null` value. */
-  readonly pendingValue: string;
-  /** Read in place of `pendingValue`, which is punctuation to a screen reader. */
-  readonly pendingSrLabel: string;
-  /** Rendered whenever any figure is still missing. */
-  readonly pendingNotice: string;
-}
-
 export type LanguageCode = "en" | "es" | "pt" | "fr" | "zh" | "ar";
 
 export interface DoctorPhoto {
@@ -309,72 +273,6 @@ export interface DoctorsSectionContent {
    */
   readonly pendingNotice: string;
   readonly languageNames: Readonly<Record<LanguageCode, string>>;
-}
-
-export interface HowItWorksStep {
-  readonly id: string;
-  readonly title: string;
-  readonly body: string;
-}
-
-export interface HowItWorksContent {
-  readonly eyebrow: string;
-  readonly heading: string;
-  readonly lead: string;
-  /** Exactly three. The v2 swap rewrites the third and touches nothing else. */
-  readonly steps: readonly HowItWorksStep[];
-}
-
-export interface Testimonial {
-  readonly id: string;
-  readonly quote: string;
-  /** Given name plus a surname initial, as a real hospital would publish it. */
-  readonly attribution: string;
-  readonly context: string;
-}
-
-export interface TestimonialsSectionContent {
-  readonly eyebrow: string;
-  readonly heading: string;
-  readonly lead: string;
-  readonly testimonials: readonly Testimonial[];
-  /**
-   * Required by PLAN.md §1 item 09. It is a field on the type rather than a
-   * line in the JSX so the section cannot ship without it — the same reasoning
-   * §5 item 11 applies to the chat disclaimer.
-   */
-  readonly disclaimer: string;
-}
-
-export interface CoverageItem {
-  readonly id: string;
-  readonly label: string;
-  readonly detail: string;
-}
-
-export type InsuranceNoteIcon = "before-visit" | "assistance" | "billing";
-
-export interface InsuranceNote {
-  readonly id: string;
-  readonly icon: InsuranceNoteIcon;
-  readonly title: string;
-  readonly body: string;
-  /** E.164, when the note ends in a number to call. */
-  readonly phone?: string;
-}
-
-export interface InsuranceSectionContent {
-  readonly eyebrow: string;
-  readonly heading: string;
-  readonly lead: string;
-  readonly coverageLabel: string;
-  readonly coverage: readonly CoverageItem[];
-  /**
-   * Required by the type: coverage always varies by plan and by service, so a
-   * visitor must never leave this section believing a category is a promise.
-   */
-  readonly verifyNotice: string;
-  readonly notes: readonly InsuranceNote[];
 }
 
 export type Weekday =

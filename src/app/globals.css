@@ -87,8 +87,6 @@
   --spacing-7x: 34px;
   --spacing-8x: 52px;
   --spacing-9x: 72px;
-  /* The assistant band lifts into the hero by this much. */
-  --spacing-overlap: 38px;
 
   /* Closed radius set: 6 (sm) · 14 (card) · pill · icon. */
   --radius-sm: 6px;
