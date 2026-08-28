@@ -658,3 +658,32 @@ Checked in the browser, both themes: one `h1` per page, breadcrumb order, AA con
 (worst case 5.66:1), no horizontal overflow at 375px, and every tap target on the page at or above
 44px — the breadcrumb links needed `min-h-11` to get there, since a breadcrumb is standalone
 navigation and WCAG's inline-link exception does not cover it.
+
+### Fourth pass — the assistant goes back into the hero
+
+The second pass moved `AssistantBand` down beside the FAQ. The owner saw it in place and put it
+back: the card reads better floating on the photograph, and the chat backend is close enough that
+the slot is worth holding. `--spacing-overlap` is restored with it.
+
+**Running order now:** Hero → Assistant → Emergency → Specialties → Caregiver band → Care finder →
+Quick access → Virtual care → Doctors → Locations → FAQ → CTA.
+
+Two things were kept from the second pass so the reversal costs as little as possible:
+
+1. **`QuickAccess` stays below the finder.** It used to sit between the emergency block and the
+   specialties, and moving it down is most of why the services are still reachable in roughly two
+   screens instead of nearly four.
+2. **Nothing is allowed between Specialties, the caregiver band and the finder.** That run is the
+   client's brief in her order, and it stays contiguous.
+
+| Screens to reach (375x812) | Original | Second pass | Now |
+|---|---|---|---|
+| Specialties | 3.6 | 0.8 | **2.1** |
+| "Caring for an older adult?" | 5.2 | 2.4 | **3.8** |
+| "Help me find care" | 6.3 | 3.5 | **4.9** |
+| Whole page | 22.2 | 14.8 | **14.9** |
+
+**The standing caveat.** `AssistantPrompt` still has no endpoint — submitting is
+`event.preventDefault()` and nothing else — and it is once again the first interactive thing a
+visitor meets. Until `/api/chat` ships, the most prominent slot on the page is a text field that
+swallows a question. That is a known, accepted trade, not an oversight.
