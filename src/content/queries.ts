@@ -54,6 +54,14 @@ export async function getSpecialtyBySlug(
   return specialties.find((specialty) => specialty.slug === slug);
 }
 
+/** Everything except the one being viewed, for the footer of a detail page. */
+export async function getOtherSpecialties(
+  slug: string,
+): Promise<readonly Specialty[]> {
+  const all = await getSpecialties();
+  return all.filter((specialty) => specialty.slug !== slug);
+}
+
 /**
  * Slug to display name, so a card can label a doctor's specialty without any
  * section reaching into `specialties.ts` itself.

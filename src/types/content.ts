@@ -205,6 +205,36 @@ export interface SpecialtiesSectionContent {
   readonly pendingNotice: string;
 }
 
+/**
+ * Chrome for `/specialties/[slug]`. One module serves all four pages, so a
+ * label cannot drift between them, and nothing here is specialty-specific —
+ * that all comes off the `Specialty` record.
+ */
+export interface SpecialtyPageContent {
+  readonly eyebrow: string;
+  readonly homeLabel: string;
+  readonly breadcrumbLabel: string;
+  /** The visible h2 over both lists — and over the notice that replaces them. */
+  readonly coversLabel: string;
+  readonly conditionsLabel: string;
+  readonly servicesLabel: string;
+  /** Stands in for both lists while they are empty. */
+  readonly listsPendingNotice: string;
+  readonly cliniciansLabel: string;
+  /** Stands in for the roster when no clinician is assigned to this service. */
+  readonly cliniciansPendingNotice: string;
+  readonly bookingLabel: string;
+  readonly bookingLead: string;
+  readonly phoneLabel: string;
+  readonly acceptingLabel: string;
+  readonly notAcceptingLabel: string;
+  readonly referralRequiredLabel: string;
+  readonly referralNotRequiredLabel: string;
+  readonly locationLabel: string;
+  readonly locationLinkLabel: string;
+  readonly otherServicesLabel: string;
+}
+
 export type LanguageCode = "en" | "es" | "pt" | "fr" | "zh" | "ar";
 
 export interface DoctorPhoto {

@@ -628,3 +628,33 @@ at an anchor that no longer exists.
 
 Next candidate if it needs to be shorter still: `QuickAccess` (1.5 screens) largely repeats the
 persistent action bar now that Call / Book / Virtual Care are fixed to every screen.
+
+### Third pass — `/specialties/[slug]`
+
+PLAN.md §1 parked specialty detail pages in v2. They came forward because the caregiver band's
+"Learn about Geriatric Care" had nowhere to go: it pointed at `/#specialties`, which scrolled the
+reader *back up* to the one-line card they had just left.
+
+All four services get the page, not just geriatrics, and every specialty-specific word is read off
+the `Specialty` record — including `seo`, which had been sitting unused in the type since it was
+written. Adding a fifth service is a `specialties.ts` edit and nothing else.
+
+- `src/app/specialties/[slug]/page.tsx` — `generateStaticParams` over `getSpecialties()`,
+  `generateMetadata` from `specialty.seo`, `dynamicParams = false` so an unknown slug is a 404
+  rather than an on-demand render of nothing. All four prerender as SSG.
+- `src/components/sections/specialty-detail.tsx` — presentational, Server, zero JS.
+- `src/content/specialty-page.ts` — chrome for all four pages, so a label cannot drift between them.
+- `getOtherSpecialties(slug)` added to the `queries.ts` seam.
+
+Three links were closed off with it: the home-page specialty card is now a link (its own TODO), the
+caregiver CTA points at `/specialties/geriatric-care`, and the care finder's result links the service
+it names — a result that names a service and then makes you go and find it is half an answer.
+
+`conditions` and `services` are still empty and three of the four services still have no clinician.
+Both render a stated notice rather than an absent section: an absent section reads as "there is
+nothing", which is a different claim from "we have not published it yet".
+
+Checked in the browser, both themes: one `h1` per page, breadcrumb order, AA contrast throughout
+(worst case 5.66:1), no horizontal overflow at 375px, and every tap target on the page at or above
+44px — the breadcrumb links needed `min-h-11` to get there, since a breadcrumb is standalone
+navigation and WCAG's inline-link exception does not cover it.
