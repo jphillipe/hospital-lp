@@ -15,7 +15,13 @@ import type { HeroContent } from "@/types/content";
 export const hero = {
   eyebrow: "Dighton Medical Center",
   title: "Personalized care. Close to home.",
-  body: "Healthcare for you and your family, in person or virtually.",
+  /*
+   * This line said "in person or virtually" while the virtual care section
+   * existed. That section is gone and the practice has not set up video visits,
+   * so the clause went with it rather than being left as the one promise on the
+   * page with nothing behind it.
+   */
+  body: "Healthcare for you and your family, in one practice.",
   handoff: "How can we help you?",
   secondaryAction: {
     label: "Not sure what you need?",

@@ -41,7 +41,10 @@ export interface SiteConfig {
   readonly emergencyNotice: string;
   readonly patientPortalUrl: string;
   readonly booking: {
-    /** v1: a `tel:` href. v2: `/book?doctor=<slug>`. Read only by `BookCta`. */
+    /**
+     * The scheduling route. Read only by `BookCta`, which appends
+     * `?specialty=` / `?doctor=` — never anything a visitor typed.
+     */
     readonly ctaHref: string;
     readonly ctaLabel: string;
   };
@@ -103,6 +106,12 @@ export interface AssistantPanelContent {
   readonly thinkingLabel: string;
   /** Names the chip row under an answer that points at a service. */
   readonly relatedLabel: string;
+  /**
+   * The action beside those chips. The assistant routes; this is the only place
+   * it can hand someone over to something that actually books, which is what
+   * turns an answer into a visit.
+   */
+  readonly bookLabel: string;
   /** Shown when the transcript cannot be recovered at all. */
   readonly errorMessage: string;
   /**
@@ -143,37 +152,12 @@ export interface EmergencyBlockContent {
   readonly actions: readonly EmergencyAction[];
 }
 
-/** Serializable: the strip names its icon, the component resolves it. */
-export type QuickAccessIcon =
-  | "book"
-  | "virtual-care"
-  | "find-a-doctor"
-  | "patient-portal";
-
-/**
- * `alert` is the emergency route only. Direction G treats alert as a
- * wash-plus-ink pair, so it stays a card like the others — never a red block.
+/*
+ * `QuickAccessContent`, `QuickAccessItem`, `QuickAccessIcon` and
+ * `QuickAccessTone` were removed with the section, the way `StatsSection` and
+ * the other three hospital-era sections were. Git holds them if the strip comes
+ * back; see `content/care-model.ts` for why it went.
  */
-export type QuickAccessTone = "default" | "alert";
-
-export interface QuickAccessItem {
-  readonly id: string;
-  readonly title: string;
-  readonly description: string;
-  /** A standing fact — hours or how the door works. Never a statistic. */
-  readonly meta: string;
-  readonly actionLabel: string;
-  readonly href: string;
-  readonly external?: boolean;
-  readonly tone?: QuickAccessTone;
-  readonly icon: QuickAccessIcon;
-}
-
-export interface QuickAccessContent {
-  readonly heading: string;
-  /** Four, one per arrival state. */
-  readonly items: readonly QuickAccessItem[];
-}
 
 /** Resolved to a Lucide glyph by `components/shared/icon.tsx`. */
 export type IconName =
@@ -338,12 +322,54 @@ export interface DoctorsSectionContent {
   readonly notAcceptingLabel: string;
   /** Introduces the physicians who are not featured in the grid. */
   readonly moreLabel: string;
+  /** Sends the home page's strip of cards to the full directory. */
+  readonly directoryLabel: string;
   /**
    * Rendered whenever a specialty has no named clinician yet. The roster is
    * the client's to supply; inventing one is what `CLAUDE.md` forbids.
    */
   readonly pendingNotice: string;
   readonly languageNames: Readonly<Record<LanguageCode, string>>;
+}
+
+/**
+ * Chrome for `/doctors` and `/doctors/[slug]`. One module serves both, so a
+ * label cannot drift between the directory and a profile, and nothing here is
+ * clinician-specific — that all comes off the `Doctor` record.
+ */
+export interface DoctorPageContent {
+  readonly eyebrow: string;
+  readonly homeLabel: string;
+  readonly breadcrumbLabel: string;
+
+  readonly directoryTitle: string;
+  readonly directoryLead: string;
+  /** Beside each group heading, pointing at `/specialties/<slug>`. */
+  readonly serviceLinkLabel: string;
+  /** Heads the group of services that have nobody listed yet. */
+  readonly unstaffedLabel: string;
+  readonly unstaffedBody: string;
+
+  readonly aboutLabel: string;
+  readonly educationLabel: string;
+  readonly certificationsLabel: string;
+  readonly languagesLabel: string;
+  /** `"%n years in practice"` — the placeholder is substituted. */
+  readonly experienceLabel: string;
+  readonly specialtiesLabel: string;
+  readonly locationLabel: string;
+  readonly locationLinkLabel: string;
+
+  readonly bookingLabel: string;
+  readonly bookingLead: string;
+  readonly phoneLabel: string;
+  readonly acceptingLabel: string;
+  readonly notAcceptingLabel: string;
+  /** Said out loud rather than leaving a disabled button to be interpreted. */
+  readonly notAcceptingBody: string;
+
+  readonly otherCliniciansLabel: string;
+  readonly seoDescriptionSuffix: string;
 }
 
 export type Weekday =
@@ -403,6 +429,71 @@ export interface LocationsSectionContent {
   readonly everyDayLabel: string;
 }
 
+export interface InfoPageSection {
+  readonly id: string;
+  readonly heading: string;
+  /** Prose written for this page. Optional — a section may be pure reuse. */
+  readonly body?: string;
+  /**
+   * `Faq.slug`s whose answers become the body of this section. This is the
+   * point of the type: the practical pages are a re-composition of what
+   * `faqs.ts` already says, so a page and the FAQ cannot answer the same
+   * question two different ways — and the chat corpus keeps one source.
+   */
+  readonly faqSlugs: readonly string[];
+  readonly points?: readonly string[];
+}
+
+/**
+ * A practical page — new patients, insurance, accessibility. One component
+ * renders all three.
+ *
+ * `pendingNotice` is `null` when everything on the page is already asserted
+ * somewhere else on the site, and a sentence when it is not. It is not
+ * optional: a page about what the practice accepts has to state plainly which
+ * parts of it nobody has confirmed.
+ */
+export interface InfoPage {
+  readonly slug: string;
+  readonly eyebrow: string;
+  readonly title: string;
+  readonly lead: string;
+  readonly sections: readonly InfoPageSection[];
+  readonly pendingNotice: string | null;
+  readonly closingLabel: string;
+  readonly closingBody: string;
+  readonly phoneLabel: string;
+  readonly homeLabel: string;
+  readonly breadcrumbLabel: string;
+  readonly seo: { readonly title: string; readonly description: string };
+}
+
+/**
+ * A legal document the practice has to publish and that this project does not
+ * write. `pendingNotice` is required, not optional: an unwritten privacy policy
+ * rendered without one reads as a policy.
+ */
+export interface LegalPage {
+  readonly slug: string;
+  readonly title: string;
+  readonly summary: string;
+  /** What the document will cover — a placeholder with nothing in it is worse. */
+  readonly covers: readonly string[];
+  readonly seoDescription: string;
+}
+
+/** Chrome shared by every legal page, so a label cannot drift between them. */
+export interface LegalPageContent {
+  readonly eyebrow: string;
+  readonly homeLabel: string;
+  readonly breadcrumbLabel: string;
+  readonly coversLabel: string;
+  readonly pendingNotice: string;
+  readonly contactLabel: string;
+  readonly contactBody: string;
+  readonly phoneLabel: string;
+}
+
 export type FaqCategory = "booking" | "cost" | "visiting" | "care";
 
 export interface Faq {
@@ -427,6 +518,33 @@ export interface FaqSectionContent {
   readonly fallbackBody: string;
 }
 
+export interface CareModelStep {
+  readonly id: string;
+  readonly title: string;
+  readonly body: string;
+  /** FK to `Specialty.slug`; `null` for a step that is not one service. */
+  readonly specialtySlug: string | null;
+}
+
+/**
+ * How the four services work as one team rather than four front doors.
+ *
+ * The rule this content has to keep: **every step describes how starting works,
+ * never a programme, a protocol or a clinical pathway.** The practice has not
+ * described one, and a numbered diagram is exactly the kind of thing that reads
+ * as a claim. Each step below has to be traceable to something already asserted
+ * in `faqs.ts`, `locations.ts` or `doctors.ts`.
+ */
+export interface CareModelContent {
+  readonly eyebrow: string;
+  readonly heading: string;
+  readonly lead: string;
+  readonly steps: readonly CareModelStep[];
+  readonly closingLabel: string;
+  readonly closingBody: string;
+  readonly action: NavItem;
+}
+
 /**
  * The band aimed at the adult child rather than the patient. It is the one
  * section on the page written for someone acting on another person's behalf,
@@ -443,23 +561,14 @@ export interface CaregiverBandContent {
   readonly phoneLabel: string;
 }
 
-export interface VirtualCareContent {
-  readonly eyebrow: string;
-  readonly heading: string;
-  readonly lead: string;
-  /** Renders as a chip on the heading: "Coming soon". */
-  readonly statusLabel: string;
-  readonly body: string;
-  /** What to do until it exists. */
-  readonly meanwhileLabel: string;
-  readonly meanwhileBody: string;
-  readonly phoneLabel: string;
-  /**
-   * Required by the type, not by memory: this service does not exist yet and a
-   * visitor must not leave the section thinking it does.
-   */
-  readonly pendingNotice: string;
-}
+/*
+ * `VirtualCareContent` was removed with its section, on the owner's
+ * instruction. It described video visits the practice has not set up, and it
+ * existed largely so the third persistent action had somewhere to point.
+ * `faqs.ts` still answers "do you offer video visits?" with "not yet", which is
+ * the right home for a question about a service we do not have. Git holds the
+ * type and the section if the service is ever built.
+ */
 
 /**
  * A router, not a triage tool. Every branch ends in "start here", never in a
@@ -516,11 +625,133 @@ export interface CareFinderContent {
   readonly labels: CareFinderLabels;
 }
 
+/**
+ * When the practice may call back. Ids are the wire values, so they are the
+ * one part of this the schema and the form both have to agree on.
+ */
+export type CallbackWindowId = "morning" | "afternoon" | "any";
+
+export interface CallbackWindow {
+  readonly id: CallbackWindowId;
+  readonly label: string;
+  readonly detail: string;
+}
+
+/** Validation copy, so `server/schemas/appointment.ts` holds no strings. */
+export interface BookingErrorMessages {
+  readonly service: string;
+  readonly fullName: string;
+  readonly phone: string;
+  readonly email: string;
+  readonly callback: string;
+  readonly notes: string;
+  /** Heads the list of errors above the form after a rejected submit. */
+  readonly summaryHeading: string;
+  /** Anything the schema did not catch. */
+  readonly generic: string;
+}
+
+/**
+ * The confirmation screen, separate from the form for the same reason
+ * `AssistantPanelContent` is separate from the band: one is the doorway, the
+ * other is what is said once it has been used.
+ */
+export interface BookingConfirmationContent {
+  readonly eyebrow: string;
+  readonly heading: string;
+  readonly body: string;
+  readonly phoneLabel: string;
+  readonly restartLabel: string;
+  /**
+   * Required by the type, not by memory. Nothing is transmitted anywhere: the
+   * request would reach a scheduler the practice has not chosen, and a
+   * confirmation implying otherwise is worse than having no form.
+   */
+  readonly pendingNotice: string;
+}
+
+/**
+ * Everything `/book` says. The service options themselves are **not** here —
+ * they are `Specialty` records resolved by the page, so adding a fifth service
+ * stays a `specialties.ts` edit. Only the option that is not a service lives in
+ * this module.
+ *
+ * Nothing in this interface asks what is wrong with anyone. `site.legal
+ * .hipaaNotice` promises the site collects no protected health information and
+ * PLAN.md §5 item 5 makes that structural: there is no symptom field, no date
+ * of birth, no insurance member number, and only `specialty` and `doctor` ever
+ * reach the query string.
+ */
+export interface BookingContent {
+  readonly eyebrow: string;
+  readonly title: string;
+  readonly lead: string;
+  readonly homeLabel: string;
+  readonly breadcrumbLabel: string;
+
+  readonly serviceLegend: string;
+  readonly serviceHelp: string;
+  /** The option that is not a specialty — the review's "I'm not sure". */
+  readonly unsureLabel: string;
+  readonly unsureDescription: string;
+  /** Revealed by that option. It offers help; it never blocks the submit. */
+  readonly unsureHelpHeading: string;
+  readonly unsureHelpBody: string;
+  readonly unsureFinderLabel: string;
+
+  /** Names the clinician carried in from a profile or a card. */
+  readonly clinicianLabel: string;
+  readonly clearClinicianLabel: string;
+
+  readonly detailsLegend: string;
+  readonly fullNameLabel: string;
+  readonly phoneLabel: string;
+  readonly phoneHelp: string;
+  readonly emailLabel: string;
+  readonly emailHelp: string;
+  readonly optionalSuffix: string;
+
+  readonly callbackLegend: string;
+  readonly callbackHelp: string;
+  readonly callbackWindows: readonly CallbackWindow[];
+
+  readonly notesLabel: string;
+  /** Says in plain words that health details do not belong in the box. */
+  readonly notesHelp: string;
+  readonly notesPlaceholder: string;
+
+  readonly submitLabel: string;
+  readonly submittingLabel: string;
+
+  /** The HIPAA line, repeated where people type — PLAN.md §5 item 11. */
+  readonly privacyNotice: string;
+  readonly emergencyNote: string;
+
+  readonly errors: BookingErrorMessages;
+  readonly confirmation: BookingConfirmationContent;
+}
+
 export interface CtaBandContent {
   readonly heading: string;
   readonly body: string;
   readonly phoneLabel: string;
   /** The last thing on the page before the footer. It says 911. */
+  readonly emergencyNote: string;
+}
+
+/**
+ * The error boundary. Kept separate from `NotFoundContent` because the two say
+ * different things: a 404 knows the visitor is in the wrong place, an error page
+ * knows only that we are.
+ */
+export interface ErrorPageContent {
+  readonly eyebrow: string;
+  readonly heading: string;
+  readonly lead: string;
+  readonly retryLabel: string;
+  readonly homeLabel: string;
+  readonly phoneLabel: string;
+  /** Whatever broke, the practice is still reachable and 911 still exists. */
   readonly emergencyNote: string;
 }
 

@@ -1,4 +1,5 @@
-import { InfoIcon } from "lucide-react";
+import { ArrowRightIcon, InfoIcon } from "lucide-react";
+import Link from "next/link";
 
 import { DoctorCard } from "@/components/cards/doctor-card";
 import { Container } from "@/components/shared/container";
@@ -75,6 +76,15 @@ export function DoctorsSection({
             <InfoIcon aria-hidden className="mt-1 size-4 shrink-0" />
             {content.pendingNotice}
           </p>
+
+          {/* The strip is a preview now that there is a page behind it. */}
+          <Link
+            href="/doctors"
+            className="mt-2 flex min-h-11 w-fit items-center gap-2 rounded-sm text-button font-semibold text-primary hover:underline"
+          >
+            {content.directoryLabel}
+            <ArrowRightIcon aria-hidden className="size-4 shrink-0" />
+          </Link>
         </div>
       </Container>
     </section>

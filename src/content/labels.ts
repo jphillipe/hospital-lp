@@ -22,16 +22,14 @@ export const labels = {
     submenuHint: "has a submenu",
   },
   /**
-   * The three actions the client asked to keep visible at all times. They are
-   * one list rendered twice — in the header from `lg` up, and in the fixed bar
-   * at the bottom of every small screen — so the wording cannot drift between
-   * the two.
+   * The actions kept visible at all times. They are one list rendered twice —
+   * in the header from `lg` up, and in the fixed bar at the bottom of every
+   * small screen — so the wording cannot drift between the two.
    */
   actions: {
     barLabel: "Quick actions",
     call: "Call Us",
     book: "Book Appointment",
-    virtualCare: "Virtual Care",
   },
   footer: {
     navLabel: "Footer",

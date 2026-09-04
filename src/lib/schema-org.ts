@@ -1,11 +1,22 @@
-import type { Faq, Location, OpeningHours } from "@/types/content";
+import { formatDoctorName } from "@/lib/format";
+import type { Doctor, Faq, Location, OpeningHours } from "@/types/content";
 
 /**
- * `Hospital` structured data — PLAN.md §1 item 11 and §7 item 9.
+ * Structured data — PLAN.md §1 item 11 and §7 item 9.
  *
  * Pure, so it is unit-testable without a DOM and without a render, and it
  * takes the origin as an argument rather than reading `env` so the module
  * carries no build-time state.
+ *
+ * **The organisation is a `MedicalClinic`, not a `Hospital`.** It was
+ * `Hospital` from the hospital era and stayed that way through the repositioning.
+ * `Hospital` is the schema.org type for an inpatient institution, while
+ * `site.ts` states in its own doc comment that this is an outpatient practice
+ * with no emergency department and `site.emergencyNotice` says so to every
+ * visitor. Emitting `Hospital` told search engines the opposite of what the page
+ * says — and on a medical site the consequence of that is somebody arriving at
+ * the door with chest pain. `MedicalClinic` is the truthful type and, being a
+ * `MedicalOrganization` too, keeps every property already used here.
  */
 
 interface JsonLdPostalAddress {
@@ -25,9 +36,9 @@ interface JsonLdOpeningHours {
   readonly closes: string;
 }
 
-export interface HospitalSchema {
+export interface MedicalClinicSchema {
   readonly "@context": "https://schema.org";
-  readonly "@type": "Hospital";
+  readonly "@type": "MedicalClinic";
   readonly "@id": string;
   readonly name: string;
   readonly description: string;
@@ -50,6 +61,17 @@ export interface HospitalSchema {
  */
 const ALL_DAY = { opens: "00:00", closes: "23:59" } as const;
 
+function toPostalAddress(location: Location): JsonLdPostalAddress {
+  return {
+    "@type": "PostalAddress",
+    streetAddress: location.address.street,
+    addressLocality: location.address.city,
+    addressRegion: location.address.region,
+    postalCode: location.address.postalCode,
+    addressCountry: location.address.country,
+  };
+}
+
 function toOpeningHours(hours: OpeningHours): JsonLdOpeningHours {
   const span =
     hours.opens === null || hours.closes === null
@@ -64,7 +86,7 @@ function toOpeningHours(hours: OpeningHours): JsonLdOpeningHours {
   };
 }
 
-interface HospitalSchemaInput {
+interface MedicalClinicSchemaInput {
   readonly location: Location;
   /** Canonical origin. A trailing slash is tolerated and stripped. */
   readonly origin: string;
@@ -72,30 +94,23 @@ interface HospitalSchemaInput {
   readonly specialties?: readonly string[];
 }
 
-export function buildHospitalSchema({
+export function buildMedicalClinicSchema({
   location,
   origin,
   specialties,
-}: HospitalSchemaInput): HospitalSchema {
+}: MedicalClinicSchemaInput): MedicalClinicSchema {
   const base = origin.replace(/\/+$/, "");
 
   return {
     "@context": "https://schema.org",
-    "@type": "Hospital",
-    // Stable identity, so a v2 Physician or Department can point back at it.
+    "@type": "MedicalClinic",
+    // Stable identity — every Physician node points back at this id.
     "@id": `${base}/#${location.slug}`,
     name: location.name,
     description: location.description,
     url: base,
     telephone: location.phone,
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: location.address.street,
-      addressLocality: location.address.city,
-      addressRegion: location.address.region,
-      postalCode: location.address.postalCode,
-      addressCountry: location.address.country,
-    },
+    address: toPostalAddress(location),
     openingHoursSpecification: location.hours.map(toOpeningHours),
     ...(specialties === undefined || specialties.length === 0
       ? {}
@@ -109,6 +124,116 @@ export function buildHospitalSchema({
             longitude: location.geo.longitude,
           },
         }),
+  };
+}
+
+export interface PhysicianSchema {
+  readonly "@context": "https://schema.org";
+  readonly "@type": "Physician";
+  readonly "@id": string;
+  readonly name: string;
+  readonly url: string;
+  readonly jobTitle: string;
+  readonly description: string;
+  readonly medicalSpecialty: readonly string[];
+  readonly knowsLanguage: readonly string[];
+  readonly worksFor: { readonly "@id": string };
+  readonly address: JsonLdPostalAddress;
+  readonly telephone: string;
+  readonly alumniOf?: readonly {
+    readonly "@type": "EducationalOrganization";
+    readonly name: string;
+  }[];
+  readonly image?: string;
+}
+
+/**
+ * `Physician` structured data for a profile page.
+ *
+ * The `Doctor` record has carried education, board certifications and languages
+ * since it was written and none of it was ever expressed to a crawler. This is
+ * the node that does it, and `worksFor` points at the clinic's `@id` — which is
+ * what PLAN.md §5 item 4 reserved the slug-as-identity for.
+ *
+ * `image` is omitted rather than emitted empty while `photo.src` is `null`: an
+ * absent portrait is not a broken one.
+ */
+export function buildPhysicianSchema({
+  doctor,
+  origin,
+  location,
+  specialtyNames,
+  languageNames,
+}: {
+  readonly doctor: Doctor;
+  readonly origin: string;
+  readonly location: Location;
+  readonly specialtyNames: Readonly<Record<string, string>>;
+  readonly languageNames: Readonly<Record<string, string>>;
+}): PhysicianSchema {
+  const base = origin.replace(/\/+$/, "");
+  const url = `${base}/doctors/${doctor.slug}`;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Physician",
+    "@id": `${url}#physician`,
+    name: formatDoctorName(doctor),
+    url,
+    jobTitle: doctor.title,
+    description: doctor.bio,
+    medicalSpecialty: doctor.specialtySlugs.map(
+      (slug) => specialtyNames[slug] ?? slug,
+    ),
+    knowsLanguage: doctor.languages.map((code) => languageNames[code] ?? code),
+    worksFor: { "@id": `${base}/#${location.slug}` },
+    address: toPostalAddress(location),
+    telephone: location.phone,
+    ...(doctor.education.length === 0
+      ? {}
+      : {
+          alumniOf: doctor.education.map((entry) => ({
+            "@type": "EducationalOrganization" as const,
+            name: entry.institution,
+          })),
+        }),
+    ...(doctor.photo.src === null ? {} : { image: `${base}${doctor.photo.src}` }),
+  };
+}
+
+export interface BreadcrumbListSchema {
+  readonly "@context": "https://schema.org";
+  readonly "@type": "BreadcrumbList";
+  readonly itemListElement: readonly {
+    readonly "@type": "ListItem";
+    readonly position: number;
+    readonly name: string;
+    readonly item: string;
+  }[];
+}
+
+/**
+ * `BreadcrumbList` for the detail routes. The trail rendered on the page and
+ * the one emitted here take the same array, so they cannot disagree.
+ */
+export function buildBreadcrumbSchema({
+  trail,
+  origin,
+}: {
+  readonly trail: readonly { readonly name: string; readonly path: string }[];
+  readonly origin: string;
+}): BreadcrumbListSchema {
+  const base = origin.replace(/\/+$/, "");
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: trail.map((entry, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: entry.name,
+      item: `${base}${entry.path}`,
+    })),
   };
 }
 

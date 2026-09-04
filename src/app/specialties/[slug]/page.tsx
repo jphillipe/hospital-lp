@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { SpecialtyDetail } from "@/components/sections/specialty-detail";
+import { JsonLd } from "@/components/shared/json-ld";
 import { doctorsSection } from "@/content/doctors";
 import {
   getDoctorsBySpecialty,
@@ -12,6 +13,8 @@ import {
 } from "@/content/queries";
 import { site } from "@/content/site";
 import { specialtyPage } from "@/content/specialty-page";
+import { env } from "@/lib/env";
+import { buildBreadcrumbSchema } from "@/lib/schema-org";
 
 /**
  * The detail page PLAN.md §1 reserved for v2, brought forward because the
@@ -72,14 +75,28 @@ export default async function SpecialtyPage({
   ]);
 
   return (
-    <SpecialtyDetail
-      content={specialtyPage}
-      specialty={specialty}
-      clinicians={clinicians}
-      doctorsContent={doctorsSection}
-      specialtyNames={specialtyNames}
-      others={others}
-      emergencyNote={site.emergencyNotice}
-    />
+    <>
+      {/* The same trail the page renders, so the two cannot disagree. */}
+      <JsonLd
+        data={buildBreadcrumbSchema({
+          origin: env.NEXT_PUBLIC_SITE_URL,
+          trail: [
+            { name: specialtyPage.homeLabel, path: "/" },
+            { name: specialtyPage.eyebrow, path: "/#specialties" },
+            { name: specialty.name, path: `/specialties/${specialty.slug}` },
+          ],
+        })}
+      />
+
+      <SpecialtyDetail
+        content={specialtyPage}
+        specialty={specialty}
+        clinicians={clinicians}
+        doctorsContent={doctorsSection}
+        specialtyNames={specialtyNames}
+        others={others}
+        emergencyNote={site.emergencyNotice}
+      />
+    </>
   );
 }

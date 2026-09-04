@@ -9,6 +9,7 @@ export const doctorsSection = {
   acceptingLabel: "Accepting new patients",
   notAcceptingLabel: "Not accepting new patients",
   moreLabel: "Also practising here:",
+  directoryLabel: "See every clinician",
   pendingNotice:
     "Only the primary care clinicians are listed so far. The geriatric, psychology and physical therapy teams will appear here once the practice supplies them — they are left blank rather than invented.",
   languageNames: {

@@ -35,6 +35,7 @@ export const assistant = {
     sendLabel: "Send",
     thinkingLabel: "Thinking…",
     relatedLabel: "Read more:",
+    bookLabel: "Request an appointment",
     errorMessage:
       "Something went wrong on our side. Call the main line on " +
       `${formatPhone(site.phones.main)} and whoever picks up can help.`,

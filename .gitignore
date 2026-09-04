@@ -32,6 +32,8 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# The template is the opt-in: it holds no secrets and PLAN.md §2 expects it.
+!.env.example
 
 # vercel
 .vercel

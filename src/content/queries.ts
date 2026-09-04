@@ -112,6 +112,14 @@ export async function getDoctorBySlug(
   return doctors.find((doctor) => doctor.slug === slug);
 }
 
+/** Everyone except the one being viewed, for the footer of a profile page. */
+export async function getOtherDoctors(
+  slug: string,
+): Promise<readonly Doctor[]> {
+  const all = await getDoctors();
+  return all.filter((doctor) => doctor.slug !== slug);
+}
+
 const byLocationOrder = (a: Location, b: Location): number => a.order - b.order;
 
 export async function getLocations(): Promise<readonly Location[]> {

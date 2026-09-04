@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { BookCta } from "@/components/booking/book-cta";
 import { PhoneLink } from "@/components/shared/phone-link";
+import { UNSURE_SERVICE } from "@/lib/booking";
 import type {
   CareFinderContent,
   CareFinderOutcome,
@@ -180,7 +181,16 @@ export function CareFinderQuiz({
           )}
 
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <BookCta className="h-12 rounded-full px-6 text-base font-semibold" />
+            {/*
+              The result now ends in the thing it was pointing at. The "I'm not
+              sure" outcome has no `specialtySlug`, and it carries that through
+              rather than dropping it: someone who told us they do not know
+              should not have to answer the same question again on the form.
+            */}
+            <BookCta
+              specialty={outcome.specialtySlug ?? UNSURE_SERVICE}
+              className="h-12 rounded-full px-6 text-base font-semibold"
+            />
             <p className="flex flex-col gap-1 text-sm">
               <span className="text-muted-foreground">
                 {content.labels.callLabel}

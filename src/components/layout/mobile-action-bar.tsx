@@ -12,7 +12,10 @@ import { labels } from "@/content/labels";
  * never underneath it, and `env(safe-area-inset-bottom)` keeps the row clear
  * of the home indicator on an iPhone.
  *
- * Server, zero JS: three links.
+ * Server, zero JS. `auto-cols-fr grid-flow-col` rather than a fixed column
+ * count, so the row divides itself evenly however many actions
+ * `site-actions.ts` declares — it was `grid-cols-3` and broke the moment
+ * virtual care was removed.
  */
 export function MobileActionBar() {
   return (
@@ -20,7 +23,7 @@ export function MobileActionBar() {
       aria-label={labels.actions.barLabel}
       className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-card pb-[env(safe-area-inset-bottom)] shadow-float lg:hidden"
     >
-      <ul className="grid grid-cols-3">
+      <ul className="grid auto-cols-fr grid-flow-col">
         {siteActions.map((action) => {
           const Icon = action.icon;
 

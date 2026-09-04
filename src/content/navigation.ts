@@ -20,7 +20,7 @@ export const primaryNav = [
   },
   {
     label: "Find a Clinician",
-    href: "/#doctors",
+    href: "/doctors",
     description: "Who practises here, and which languages they speak.",
   },
   {
@@ -35,8 +35,12 @@ export const primaryNav = [
   },
 ] as const satisfies readonly NavItem[];
 
-/** Reserved now so the v2 scheduling flow is born with a URL. */
-export const bookingRoute = "/book" as const;
+/**
+ * The scheduling route. It was reserved here before it existed so the flow
+ * would be born with a URL (PLAN.md §5 item 1); it is now `/book` for real, and
+ * it reads off `site` so the constant and every `BookCta` cannot disagree.
+ */
+export const bookingRoute = site.booking.ctaHref;
 
 export const footerNav = [
   {
@@ -45,17 +49,17 @@ export const footerNav = [
       { label: "Our Services", href: "/#specialties" },
       { label: "Help me find care", href: "/#care-finder" },
       { label: "Caring for an older adult", href: "/#caregivers" },
-      { label: "Find a Clinician", href: "/#doctors" },
-      { label: "Virtual Care", href: "/#virtual-care" },
+      { label: "Find a Clinician", href: "/doctors" },
       { label: "In an emergency", href: "/#emergency" },
     ],
   },
   {
     title: "Patients & Visitors",
     items: [
+      { label: "New Patients", href: "/new-patients" },
+      { label: "Insurance & Billing", href: "/insurance" },
+      { label: "Accessibility", href: "/accessibility" },
       { label: "Patient Portal", href: site.patientPortalUrl, external: true },
-      { label: "Insurance & Billing", href: "/#faq" },
-      { label: "What to bring", href: "/#faq" },
       { label: "Location & Hours", href: "/#locations" },
       { label: "Questions", href: "/#faq" },
     ],
@@ -68,9 +72,16 @@ export const footerNav = [
    */
 ] as const satisfies readonly NavGroup[];
 
+/**
+ * Three of these four pointed at routes that did not exist and 404'd on every
+ * page of the site. `/accessibility` is now a real page written from what
+ * `locations.ts` and `faqs.ts` already assert; the other three are legal
+ * instruments this project does not draft, so they ship as stated placeholders
+ * for the practice's counsel rather than as invented policy or as dead links.
+ */
 export const legalNav = [
-  { label: "Privacy Policy", href: "/privacy" },
-  { label: "Notice of Privacy Practices", href: "/privacy-practices" },
-  { label: "Nondiscrimination", href: "/nondiscrimination" },
+  { label: "Privacy Policy", href: "/legal/privacy" },
+  { label: "Notice of Privacy Practices", href: "/legal/privacy-practices" },
+  { label: "Nondiscrimination", href: "/legal/nondiscrimination" },
   { label: "Accessibility Statement", href: "/accessibility" },
 ] as const satisfies readonly NavItem[];

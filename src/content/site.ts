@@ -1,5 +1,4 @@
 import type { SiteConfig } from "@/types/content";
-import { telHref } from "@/lib/format";
 
 /**
  * Dighton Medical Center is an outpatient practice: primary care, geriatrics,
@@ -33,8 +32,15 @@ export const site = {
   emergencyNotice:
     "If this is a medical emergency, call 911 or go to the nearest emergency department. We are an outpatient practice and do not have an emergency room.",
   patientPortalUrl: "https://portal.dightonmedical.example",
+  /*
+   * `ctaHref` was `tel:` for as long as there was no form. It is the route now
+   * that `/book` exists, and because every scheduling control on the site goes
+   * through `BookCta`, this line is the whole migration — PLAN.md §5 item 1.
+   * The appointment number is not withdrawn anywhere it appeared; the phone is
+   * still the faster route for anyone who would rather talk to someone.
+   */
   booking: {
-    ctaHref: telHref(phones.appointments),
+    ctaHref: "/book",
     ctaLabel: "Book Appointment",
   },
   legal: {

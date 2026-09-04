@@ -40,7 +40,7 @@ export const faqs = [
     slug: "how-do-i-book-an-appointment",
     question: "How do I book an appointment?",
     answer:
-      "Appointments at Dighton Medical Center are booked by phone. One number covers every service: call the appointment line, describe what is going on in your own words, and whoever picks up will find the right visit. You do not need to know which service you need before you call. Online booking is not available yet.",
+      "There are two ways to book at Dighton Medical Center, and one number and one form cover every service. You can request an appointment on this website — it asks for your name, a number to call you back on and which service you think you need, and someone from the practice rings you to fix a time. Or call the appointment line and describe what is going on in your own words. Either way you do not need to know which service you need beforehand: “I'm not sure” is an answer the form and the phone both take. The online request is a callback request, not a live calendar, so no time is confirmed until the practice has spoken to you.",
     category: "booking",
     order: 2,
   },

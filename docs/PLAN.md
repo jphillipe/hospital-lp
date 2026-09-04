@@ -820,3 +820,207 @@ anything it does not actually do. Both the notice and the corpus label disappear
 `prettier --write .` rewrites this file's tables into blockquotes and reformats forty source files
 the change never touched. It was run once here and reverted. Format the files you edited, not the
 repository.
+
+## Amendment — 2026-09-04: booking, clinician pages, and the practical pages
+
+Two outside reviews arrived: one re-scoring the site as a **local outpatient clinic** rather than a
+small hospital, and one comparing it against **Brown University Health**, who the building and this
+site are being sold to. Both landed on the same strategy, and it is the one this plan already took
+on 2026-08-28 — do not out-scale a health system, out-simplify it, and answer well the question a
+large system answers badly: *"I need help and I do not know where to start."*
+
+A good deal of what the reviews asked for already existed and was scored without being seen. The
+care finder has had "I'm not sure" on every branch since it was written, ending in a phone call
+rather than a dead end. The assistant is not a chatbot placeholder: `safety.ts` short-circuits an
+emergency before the model is reached, `prompt.ts` refuses diagnosis, the whole content layer is the
+corpus, and `citations.ts` means an invented service cannot become a link.
+
+What the reviews were right about is the gap this amendment closes: **the distance between somebody
+deciding and somebody being booked.** Every CTA on the site was a `tel:` link. `/book` had been
+reserved in `navigation.ts` since the first commit and 404'd.
+
+### Decisions taken with the owner before any code
+
+| # | Question | Decision |
+|---|---|---|
+| 1 | Build a patient portal and telehealth, as the reviews scored them? | **No — booking only.** The buyer runs Epic and MyChart; a hand-built portal is worth nothing to them. Both stay the marked placeholders they already were. |
+| 2 | Fill in the missing clinicians, insurers and photographs so the demo looks complete? | **No.** Build the structure and keep every pending notice. Nothing new is invented. |
+| 3 | Merge the care finder into the assistant? | **No.** Keep both — one is deterministic, one is open-ended — and give both an ending that books. |
+
+### What `/book` is, and what it deliberately is not
+
+- `src/server/schemas/appointment.ts` — the one Zod schema (§5 item 9), and the whole statement of
+  what this site will collect: service, optional clinician, name, phone, optional email, callback
+  window, and a scheduling note. **There is no clinical field and there must never be one.** No
+  symptom, no condition, no date of birth, no insurance member number. `site.legal.hipaaNotice`
+  promises the site collects no PHI and §5 item 5 makes that structural rather than a habit — the
+  field that does not exist cannot leak, cannot be logged and cannot reach a query string.
+  `appointment.test.ts` fails if one appears.
+- `src/server/actions/appointments.ts` — validates, then checks the slugs against `queries.ts`,
+  which the schema deliberately cannot do: a slug list in the schema would follow it into any client
+  bundle that ever imported it. A stale `?doctor=` is dropped rather than refused; a stale
+  `?specialty=` is refused, because that one was chosen rather than inherited.
+- `deliverAppointmentRequest()` returns `false`, and that is not a forgotten stub.
+  `AppointmentFormState.delivered` carries it to the confirmation, which prints
+  `booking.confirmation.pendingNotice` — "nothing was actually sent" — while it is `false` and stops
+  on its own the day it returns `true`. The same gate shape as `Specialty.listsConfirmed`. A form
+  that thanks somebody for a request that went nowhere is the failure the fourth pass recorded when
+  the assistant band posted nowhere, and the fix is the same one: say so.
+- **No new dependency.** `react-hook-form` was reserved in §8 for exactly this and is not needed:
+  React 19's `useActionState` plus a Server Action plus the Zod already here covers it. No `select`
+  either — the service choice is native radios in a `fieldset` at 56px, the floor the care finder
+  already holds, because the audience is older adults on phones and a custom listbox has to
+  re-implement what a radio group gets for free.
+- Every field is **controlled**. React resets an uncontrolled form once a form action resolves, so a
+  mistyped phone number would otherwise cost the visitor their name and their notes as well.
+- `site.booking.ctaHref` changed from a `tel:` href to `/book`, and that one line was the whole
+  migration — every CTA on the site goes through `BookCta`, which is what §5 item 1 set that rule up
+  for. `BookCta` gained `specialty` and `doctor` props; **only slugs ever reach the URL.** The
+  appointment number is not withdrawn from anywhere it already appeared.
+
+Three routers now end in a booking rather than in a phone number: the care finder passes its outcome
+through (including `unsure`, so nobody is asked the same question twice), the doctor cards pass the
+clinician, and an assistant answer that names a service offers a request beside its "read more" chip.
+
+`app/error.tsx` was written at the same time — §2 listed it, it did not exist, and an exception
+anywhere in the tree fell through to Next's own screen with no header, no emergency bar and no phone
+number on it.
+
+### `/doctors` and `/doctors/[slug]`
+
+`getDoctorBySlug` had been in the query seam since the first commit with no caller. The `Doctor`
+record has carried `education`, `boardCertifications`, `yearsOfExperience` and the full
+`specialtySlugs` list just as long, and nothing rendered any of it — a card with a name and a
+language list was the whole of it.
+
+Same contract as `/specialties/[slug]`, deliberately: SSG, `dynamicParams = false`, and the chrome in
+one content module (`doctor-page.ts`) so a label cannot drift between the directory and a profile.
+
+- **The directory groups by service, and the services with nobody in them are a group too.** Three
+  of the four have no named clinician. Dropping them would read as "we do not offer that", which is
+  false, and is a different claim from "we have not published them yet".
+- **No filters**, against the plan. Specialty, language and accepting-new-patients are all in the
+  record, and there are two clinicians — a filter row over two rows of results is furniture, and it
+  would be the only client JS on the page. The grouping is the seam it slots into when there is a
+  roster to filter.
+- No geriatrician, psychologist or physical therapist was invented. `doctors.ts` forbids it in
+  writing, and `doctorsSection.pendingNotice` renders on the directory as well as the home page.
+
+### `CareModelSection`, and `QuickAccess` cut
+
+The four services read as four separate practices in the grid, and nothing on the site said
+otherwise. `#care-model` is the section that says it — five steps, directly under the grid.
+
+Every step is traceable, and `content/care-model.ts` names the source of each in its own header: one
+number for every service and no need to know which (`how-do-i-book-an-appointment`), primary care as
+the source of the referrals that open the others (Dr. Whitlock's bio), none of the four needing a
+referral from us (`do-i-need-a-referral`), one building at ground level (`locations.ts`), companions
+and booking on a parent's behalf (`can-someone-come-with-me`, `can-i-book-for-my-parent`). **No step
+describes a programme, a pathway or a protocol**, because the practice has described none, and a
+numbered diagram is the easiest place on a site to smuggle a claim into.
+
+It took `QuickAccess`'s slot rather than lengthening the page. The second pass had already named it
+as the next cut: Call, Book and Virtual Care are pinned to every screen by `MobileActionBar` and
+repeated in the header, so the strip was largely saying them a third time. Its section, content
+module and four types are deleted, the way the hospital-era four were. Patient Portal, the one door
+it carried that nothing else did, is still in the emergency bar and the footer.
+
+### The practical pages
+
+`/new-patients`, `/insurance` and `/accessibility`, rendered by one component from
+`content/info-pages.ts`.
+
+**Almost none of it is new copy.** `faqs.ts` already carried what to bring, who may come, booking for
+a parent, referrals, insurance, financial assistance, language and parking — buried in an accordion
+at the bottom of the home page, where somebody deciding whether to call will not find it. Each
+section names the FAQ slugs it renders, so a page and the accordion cannot answer the same question
+two different ways, and the chat corpus keeps one source per fact.
+
+Two things are written fresh, and both are things we can say about ourselves rather than claims about
+the practice: how booking now works, and the website's own accessibility statement.
+
+`insurancePage.pendingNotice` is the important one. The coverage categories were written for the
+hospital era and have never been checked against this practice — known inconsistency 4, still true.
+The page says so rather than presenting a list nobody has verified. The footer's "Insurance &
+Billing" and "What to bring" pointed at `/#faq`; they point at real pages now.
+
+`how-do-i-book-an-appointment` was rewritten, because it said online booking was not available and
+that is no longer true. It is the second edit `faqs.ts` asks for whenever the section that owns a
+subject changes.
+
+### SEO, and four broken links
+
+- `sitemap.ts` and `robots.ts` — both in §2, neither written. Routes are enumerated from
+  `queries.ts`, so a fifth service appears in the sitemap on the edit that creates its page.
+- `opengraph-image.tsx` — there was no social image at all. Drawn, not photographed, for the reason
+  the doctor cards render a monogram: there is no photograph of this practice, and a stock interior
+  would be somewhere else presented as here.
+- The home page had no canonical. It has one.
+- **`Hospital` to `MedicalClinic`.** This is the correction that mattered most. The node was
+  `Hospital` from the hospital era and survived the repositioning untouched, while `site.ts` states
+  in its own doc comment that this is an outpatient practice with no emergency department and
+  `site.emergencyNotice` says so to every visitor. The structured data told search engines the
+  opposite of what the page said, and on a medical site the cost of that is somebody arriving at the
+  door with chest pain. `MedicalClinic` is a `MedicalOrganization` too, so no property was lost.
+- New nodes: `Physician` per profile, with `worksFor` pointing at the clinic's `@id` — which is what
+  §5 item 4 reserved slug-as-identity for — and `BreadcrumbList` on both detail routes, built from
+  the same array the page renders.
+- `legalNav`'s four links 404'd on **every page of the site**, which was the worst SEO defect it had.
+  `/accessibility` is now a real page, written from what `locations.ts` and `faqs.ts` already assert.
+  The other three are legal instruments and are **not drafted here** — a Notice of Privacy Practices
+  has content required by HIPAA, and a §1557 notice has its own required elements, so a
+  plausible-looking version is invention with rather more at stake than a made-up phone number. They
+  ship as stated placeholders at `/legal/[slug]`, `noindex`, listing what each document will cover.
+- `.env.example` — referenced by §2, absent, and it carries the UTF-8 warning that cost a debugging
+  session last time.
+- `hero-emergency.jpg` (3.3 MB) and `hero-specialties.jpg` (2.4 MB) were orphaned and are deleted.
+  `next.config.ts` now asks for AVIF ahead of WebP; the remaining 1.9 MB source is re-encoded on
+  demand by `next/image`, so it costs repo weight rather than load time.
+
+### Verified
+
+`pnpm typecheck`, `pnpm lint`, `pnpm test` (124) and `pnpm build` all clean. `/` is still **Static**
+and `/book` is the only route added to the dynamic list — the form posts, it never navigates. Every
+route returns 200 and carries exactly one `<h1>`. `/book?specialty=geriatric-care&doctor=leila-haddad`
+arrives with Geriatric Care selected and the clinician named. The home page emits `MedicalClinic` and
+`FAQPage`; a profile emits `Physician` and `BreadcrumbList`.
+
+### Still open, and still the client's to supply
+
+1. **Photographs.** No interior, no exterior, no clinician portraits. `HeroMedia` marks an unshot
+   frame and `DoctorCard` renders a monogram, and both are honest — but this is the single
+   highest-value thing the practice can hand over, and the reviews were right that its absence is
+   what caps institutional trust.
+2. **Three clinicians.** Geriatrics, psychology and physical therapy still have no named lead.
+3. **The insurance carrier list**, unverified since the hospital era.
+4. **`listsConfirmed` is still `false`** on all four services.
+5. **The three legal documents.**
+6. `primaryNav` is still five items and does not carry New Patients. Adding a sixth is a design
+   decision rather than a content one; the footer carries it meanwhile.
+
+### Follow-up — `VirtualCare` cut, on the owner's instruction
+
+The section is gone, with `content/virtual-care.ts` and `VirtualCareContent`, the way the
+hospital-era four and `QuickAccess` went before it. What it described did not exist: no platform, no
+date, nothing to sign up for. Four things went with it, because each one only stood up while the
+section did:
+
+- **The third persistent action.** `site-actions.ts` declared Call / Book / Virtual Care, and the
+  2026-08-28 amendment is explicit that the section "exists so the third persistent action has a
+  destination". With the section gone that argument runs backwards — a permanently pinned button for
+  a service the practice does not offer — so the action went too. `MobileActionBar` was
+  `grid-cols-3` and is now `auto-cols-fr grid-flow-col`, which divides itself evenly for however
+  many actions are declared rather than breaking the next time the list changes.
+- **The footer link** to `/#virtual-care`, which would otherwise have been a fifth dead anchor.
+- **`labels.actions.virtualCare`.**
+- **The hero's "in person or virtually".** This is the one worth pausing on: it was the client's own
+  line, and it was the site's single largest claim about virtual care. Leaving it would have made
+  the hero the only place still promising a service, with nothing anywhere to back it. It now reads
+  "Healthcare for you and your family, in one practice."
+
+**The FAQ stays.** `do-you-offer-video-visits` answers "not yet — being set up, no date announced,
+nothing to sign up for, ask what can be handled by phone." Removing a marketing section does not stop
+people asking the question, and an honest "no" in the place people look for answers is not the same
+claim as a section advertising the service. It also keeps the chat corpus able to answer correctly
+instead of falling silent, and it is what `knowledge.test.ts` asserts the drafted service lists must
+never contradict.

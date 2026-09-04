@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { CheckIcon } from "lucide-react";
 
 import { BookCta } from "@/components/booking/book-cta";
@@ -44,7 +45,7 @@ export function DoctorCard({
   const fullName = formatDoctorName(doctor);
 
   return (
-    <article className="row-span-7 grid grid-rows-subgrid gap-y-3 rounded-card border border-border bg-card p-6x">
+    <article className="relative row-span-7 grid grid-rows-subgrid gap-y-3 rounded-card border border-border bg-card p-6x transition-colors hover:border-primary">
       {/* Fixed 64px either way, so swapping the monogram for a portrait moves nothing. */}
       <span className="relative flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary/10">
         {doctor.photo.src === null ? (
@@ -66,7 +67,20 @@ export function DoctorCard({
         )}
       </span>
 
-      <h3 className="text-lg">{fullName}</h3>
+      {/*
+        The name is a link now that `/doctors/<slug>` exists — the same gap the
+        specialty card closed. `after:absolute inset-0` makes the whole card the
+        hit area without nesting the Book button inside the link, which would be
+        two interactive elements one inside the other.
+      */}
+      <h3 className="text-lg">
+        <Link
+          href={`/doctors/${doctor.slug}`}
+          className="rounded-sm after:absolute after:inset-0 hover:text-primary"
+        >
+          {fullName}
+        </Link>
+      </h3>
 
       <p className="text-sm text-muted-foreground">{doctor.title}</p>
 
@@ -108,7 +122,9 @@ export function DoctorCard({
       */}
       <BookCta
         label={`${content.bookWithLabel} ${doctor.lastName}`}
-        className="h-auto min-h-9 w-full py-2 text-center whitespace-normal"
+        specialty={doctor.primarySpecialtySlug}
+        doctor={doctor.slug}
+        className="relative z-10 h-auto min-h-9 w-full py-2 text-center whitespace-normal"
       />
     </article>
   );

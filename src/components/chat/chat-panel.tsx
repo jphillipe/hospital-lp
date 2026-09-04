@@ -129,6 +129,7 @@ export function ChatPanel({
               message={message}
               specialtyNames={specialtyNames}
               relatedLabel={content.relatedLabel}
+              bookLabel={content.bookLabel}
             />
           ))}
 
